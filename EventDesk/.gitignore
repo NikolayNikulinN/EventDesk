@@ -1,0 +1,57 @@
+# Repository instructions
+AGENTS.md
+**/AGENTS.md
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+# Visual Studio and local IDE settings
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.suo
+*.rsuser
+*.sln.docstates
+*.DotSettings.user
+
+# NuGet packages and temporary files
+*.nupkg
+*.snupkg
+packages/
+*.tmp
+*.temp
+*.bak
+*~
+
+# Runtime logs and local data
+*.log
+logs/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# WiX build output
+*.wixpdb
+*.wixobj
+*.wixlib
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
