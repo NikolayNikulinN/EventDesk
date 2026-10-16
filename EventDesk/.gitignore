@@ -26,6 +26,7 @@ coverage/
 *.rsuser
 *.sln.docstates
 *.DotSettings.user
+UpgradeLog*.htm
 
 # NuGet packages and temporary files
 *.nupkg
