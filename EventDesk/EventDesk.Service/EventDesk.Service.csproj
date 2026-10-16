@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EventDesk.Application\EventDesk.Application.csproj" />
+    <ProjectReference Include="..\EventDesk.Infrastructure\EventDesk.Infrastructure.csproj" />
+    <ProjectReference Include="..\EventDesk.Contracts\EventDesk.Contracts.csproj" />
+    <ProjectReference Include="..\EventDesk.Ipc\EventDesk.Ipc.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
