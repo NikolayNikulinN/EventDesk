@@ -4,18 +4,19 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>EventDesk</AssemblyName>
-    <ApplicationIcon>appIcon.ico</ApplicationIcon>
+    <ApplicationIcon>..\EventDesk.Resources\Icons\appIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="appIcon.ico" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventDesk.Contracts\EventDesk.Contracts.csproj" />
     <ProjectReference Include="..\EventDesk.Ipc\EventDesk.Ipc.csproj" />
     <ProjectReference Include="..\EventDesk.Resources\EventDesk.Resources.csproj" />
+    <ProjectReference Include="..\EventDesk.Logger\EventDesk.Logger.csproj" />
+    <ProjectReference Include="..\EventDesk.Constants\EventDesk.Constants.csproj" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="WPF-UI" />
+    <PackageReference Include="WPF-UI.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />

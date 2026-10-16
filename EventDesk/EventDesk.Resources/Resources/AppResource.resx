@@ -113,4 +113,22 @@
 	<data name="CloseToolTip" xml:space="preserve">
 		<value>Close</value>
 	</data>
+	<data name="Calendar" xml:space="preserve">
+		<value>Calendar</value>
+	</data>
+	<data name="History" xml:space="preserve">
+		<value>History</value>
+	</data>
+	<data name="Settings" xml:space="preserve">
+		<value>Settings</value>
+	</data>
+	<data name="About" xml:space="preserve">
+		<value>About</value>
+	</data>
+	<data name="NoButton" xml:space="preserve">
+		<value>No</value>
+	</data>
+	<data name="OkButton" xml:space="preserve">
+		<value>OK</value>
+	</data>
 </root>

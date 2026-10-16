@@ -1,30 +1,30 @@
 using System.Windows;
 using EventDesk.App.ViewModels;
+using Wpf.Ui;
 
 namespace EventDesk.App.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly MainWindowViewModel _viewModel;
+    private readonly MainWindowViewModel viewModel;
 
-    public MainWindow(MainWindowViewModel viewModel)
+    public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService)
     {
-        _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+        this.viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+
         InitializeComponent();
-        DataContext = _viewModel;
-        _viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
+        DataContext = viewModel;
+
+        navigationService.SetNavigationControl(RootNavigationView);
+        viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
     }
 
-    private void MinimizeButtonClick(object sender, RoutedEventArgs e) =>
-        WindowState = WindowState.Minimized;
+    private void MinimizeButtonClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
     private void MaximizeRestoreButtonClick(object sender, RoutedEventArgs e) =>
-        WindowState = WindowState == WindowState.Maximized
-            ? WindowState.Normal
-            : WindowState.Maximized;
+                                                                                 WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
     private void CloseButtonClick(object sender, RoutedEventArgs e) => Close();
 
-    private void WindowStateChanged(object sender, EventArgs e) =>
-        _viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
+    private void WindowStateChanged(object sender, EventArgs e) => viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
 }

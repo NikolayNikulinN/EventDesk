@@ -27,4 +27,8 @@
     <Folder Include="Icons\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" />
+  </ItemGroup>
+
 </Project>

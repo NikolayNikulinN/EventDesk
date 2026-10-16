@@ -8,6 +8,8 @@
     <ProjectReference Include="..\EventDesk.Infrastructure\EventDesk.Infrastructure.csproj" />
     <ProjectReference Include="..\EventDesk.Contracts\EventDesk.Contracts.csproj" />
     <ProjectReference Include="..\EventDesk.Ipc\EventDesk.Ipc.csproj" />
+    <ProjectReference Include="..\EventDesk.Logger\EventDesk.Logger.csproj" />
+    <ProjectReference Include="..\EventDesk.Constants\EventDesk.Constants.csproj" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
   </ItemGroup>
