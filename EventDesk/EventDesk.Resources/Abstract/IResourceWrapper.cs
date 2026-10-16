@@ -13,6 +13,14 @@ public interface IResourceWrapper
 
     string CloseToolTip { get; }
 
+    string Calendar { get; }
+
+    string History { get; }
+
+    string Settings { get; }
+
+    string About { get; }
+
     string AppIconPath { get; }
 
     string MinimizeIconPath { get; }
@@ -22,10 +30,4 @@ public interface IResourceWrapper
     string RestoreIconPath { get; }
 
     string CloseIconPath { get; }
-
-    /// <summary>Gets the localized NoButton resource.</summary>
-    string NoButton { get; }
-
-    /// <summary>Gets the localized OkButton resource.</summary>
-    string OkButton { get; }
 }

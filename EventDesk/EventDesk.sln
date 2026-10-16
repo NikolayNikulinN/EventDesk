@@ -19,11 +19,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Service", "EventD
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "EventDesk.Installer", "EventDesk.Installer\EventDesk.Installer.wixproj", "{505BCFF6-497C-4BA1-B1BB-507419507D48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Domain.Tests", "tests\EventDesk.Domain.Tests\EventDesk.Domain.Tests.csproj", "{7B668730-D953-4F0D-95F3-3096AEAEFCED}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{345DA1F0-E661-462C-A4D8-7B043ABE509E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Application.Tests", "tests\EventDesk.Application.Tests\EventDesk.Application.Tests.csproj", "{FDAB1FE2-AFDA-408E-A27F-A02931BE2F8D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{34D21DC3-0EB5-48E8-81A5-E50811E2630C}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\event-model.md = Docs\event-model.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Infrastructure.Tests", "tests\EventDesk.Infrastructure.Tests\EventDesk.Infrastructure.Tests.csproj", "{F7C1AB73-8432-435E-95B3-6CD4743F3D5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Domain.Tests", "Tests\EventDesk.Domain.Tests\EventDesk.Domain.Tests.csproj", "{7B668730-D953-4F0D-95F3-3096AEAEFCED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Application.Tests", "Tests\EventDesk.Application.Tests\EventDesk.Application.Tests.csproj", "{FDAB1FE2-AFDA-408E-A27F-A02931BE2F8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Infrastructure.Tests", "Tests\EventDesk.Infrastructure.Tests\EventDesk.Infrastructure.Tests.csproj", "{F7C1AB73-8432-435E-95B3-6CD4743F3D5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Logger", "EventDesk.Logger\EventDesk.Logger.csproj", "{5298C9BA-98B8-4BD2-B1FE-7828B2C22CD6}"
 EndProject
@@ -207,6 +214,11 @@ Global
 		{2295B924-0C09-47CD-A2EB-BB78D89F6EAD}.Release|x64.Build.0 = Release|Any CPU
 		{2295B924-0C09-47CD-A2EB-BB78D89F6EAD}.Release|x86.ActiveCfg = Release|Any CPU
 		{2295B924-0C09-47CD-A2EB-BB78D89F6EAD}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7B668730-D953-4F0D-95F3-3096AEAEFCED} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
+		{FDAB1FE2-AFDA-408E-A27F-A02931BE2F8D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
+		{F7C1AB73-8432-435E-95B3-6CD4743F3D5D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

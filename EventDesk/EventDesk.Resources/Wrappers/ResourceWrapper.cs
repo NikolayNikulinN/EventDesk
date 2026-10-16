@@ -19,21 +19,23 @@ public sealed class ResourceWrapper : IResourceWrapper
 
     public string CloseToolTip => GetString(nameof(CloseToolTip));
 
-    public string AppIconPath => ImagePath + "appIcon.png";
+    public string Calendar => GetString(nameof(Calendar));
 
-    public string MinimizeIconPath => ImagePath + "minimize.png";
+    public string History => GetString(nameof(History));
 
-    public string MaximizeIconPath => ImagePath + "maximize.png";
+    public string Settings => GetString(nameof(Settings));
 
-    public string RestoreIconPath => ImagePath + "restore.png";
+    public string About => GetString(nameof(About));
 
-    public string CloseIconPath => ImagePath + "close.png";
+    public string AppIconPath => $"{ImagePath}appIcon.png";
 
-    /// <inheritdoc />
-    public string NoButton => GetString(nameof(NoButton));
+    public string MinimizeIconPath => $"{ImagePath}minimize.png";
 
-    /// <inheritdoc />
-    public string OkButton => GetString(nameof(OkButton));              
+    public string MaximizeIconPath => $"{ImagePath}maximize.png";
+
+    public string RestoreIconPath => $"{ImagePath}restore.png";
+
+    public string CloseIconPath => $"{ImagePath}close.png";
 
     private static string GetString(string key) => AppResource.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
 }
