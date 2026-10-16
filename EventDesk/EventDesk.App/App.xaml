@@ -1,0 +1,16 @@
+<Application x:Class="EventDesk.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EventDesk.Resources;component/Theme/Colors.xaml" />
+        <ResourceDictionary Source="/EventDesk.Resources;component/Theme/Brushes.xaml" />
+        <ResourceDictionary Source="/EventDesk.Resources;component/Theme/Typography.xaml" />
+        <ResourceDictionary Source="/EventDesk.Resources;component/Theme/Spacing.xaml" />
+        <ResourceDictionary Source="/EventDesk.Resources;component/Theme/CornerRadius.xaml" />
+        <ResourceDictionary Source="/EventDesk.Resources;component/Styles/WindowStyles.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

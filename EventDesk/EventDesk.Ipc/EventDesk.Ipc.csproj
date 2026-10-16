@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\EventDesk.Contracts\EventDesk.Contracts.csproj" />
+  </ItemGroup>
+</Project>

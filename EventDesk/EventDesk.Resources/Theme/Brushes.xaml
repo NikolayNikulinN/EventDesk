@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}" />
+  <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}" />
+  <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="{StaticResource TitleBarBackgroundColor}" />
+  <SolidColorBrush x:Key="TitleBarHoverBrush" Color="{StaticResource TitleBarHoverColor}" />
+  <SolidColorBrush x:Key="TitleBarPressedBrush" Color="{StaticResource TitleBarPressedColor}" />
+  <SolidColorBrush x:Key="WindowBorderBrush" Color="{StaticResource WindowBorderColor}" />
+</ResourceDictionary>

@@ -1,0 +1,18 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="EventDesk Skeleton"
+           Manufacturer="EventDesk"
+           Version="0.1.0"
+           UpgradeCode="9CCF8D21-24E8-4A21-847D-4B6A0A246B59"
+           Scope="perMachine">
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="EventDesk">
+        <Component Id="InstallFolder" Guid="*">
+          <CreateFolder />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+    <Feature Id="MainFeature" Title="EventDesk" Level="1">
+      <ComponentRef Id="InstallFolder" />
+    </Feature>
+  </Package>
+</Wix>
