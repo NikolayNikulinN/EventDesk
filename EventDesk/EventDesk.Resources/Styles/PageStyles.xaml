@@ -3,4 +3,16 @@
   <Style x:Key="ShellPageStyle" TargetType="Page">
     <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}" />
   </Style>
+  <Style x:Key="CalendarEventListStyle" TargetType="ListBox">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+  <DataTemplate x:Key="CalendarEventItemTemplate">
+    <StackPanel Orientation="Horizontal">
+      <TextBlock Text="{Binding StartsAtLocal, StringFormat={}{0:t}}" />
+      <TextBlock Margin="{StaticResource CalendarEventTitleMargin}"
+                 Text="{Binding Title}" />
+    </StackPanel>
+  </DataTemplate>
 </ResourceDictionary>

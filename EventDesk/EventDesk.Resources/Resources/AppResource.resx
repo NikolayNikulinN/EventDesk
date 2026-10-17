@@ -116,6 +116,24 @@
 	<data name="Calendar" xml:space="preserve">
 		<value>Calendar</value>
 	</data>
+	<data name="RefreshEvents" xml:space="preserve">
+		<value>Refresh</value>
+	</data>
+	<data name="LoadingEvents" xml:space="preserve">
+		<value>Loading this week's events...</value>
+	</data>
+	<data name="NoEventsThisWeek" xml:space="preserve">
+		<value>No events this week.</value>
+	</data>
+	<data name="ServiceUnavailable" xml:space="preserve">
+		<value>EventDesk service is unavailable.</value>
+	</data>
+	<data name="ServiceRequestTimedOut" xml:space="preserve">
+		<value>The service took too long to respond.</value>
+	</data>
+	<data name="CalendarLoadFailed" xml:space="preserve">
+		<value>Could not load calendar events.</value>
+	</data>
 	<data name="History" xml:space="preserve">
 		<value>History</value>
 	</data>

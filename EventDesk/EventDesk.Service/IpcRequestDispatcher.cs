@@ -1,0 +1,125 @@
+using System.Text.Json;
+using EventDesk.Application.Events;
+using EventDesk.Application.Events.Models;
+using EventDesk.Constants;
+using EventDesk.Contracts.Events;
+using EventDesk.Contracts.Ipc;
+using EventDesk.Domain.Reminders;
+using EventDesk.Ipc.Serialization;
+using EventDesk.Logger.Abstract;
+using EventDesk.Logger.Enums;
+
+namespace EventDesk.Service;
+
+public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWrapper logger)
+{
+    public async Task<IpcResponse> DispatchAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return request.Operation switch
+            {
+                IpcOperation.GetEvents => await GetEventsAsync(request, cancellationToken),
+                IpcOperation.CreateEvent => await CreateEventAsync(request, cancellationToken),
+                IpcOperation.UpdateEvent => await UpdateEventAsync(request, cancellationToken),
+                IpcOperation.DeleteEvent => await DeleteEventAsync(request, cancellationToken),
+                _ => new IpcResponse(request.CorrelationId, IpcErrorCode.InvalidRequest, null)
+            };
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            logger.Write(IpcConstants.IpcRequestCanceledLog, request.CorrelationId);
+            throw;
+        }
+        catch (Exception exception) when (exception is JsonException or ArgumentException)
+        {
+            return new IpcResponse(request.CorrelationId, IpcErrorCode.InvalidRequest, null);
+        }
+        catch (KeyNotFoundException)
+        {
+            return new IpcResponse(request.CorrelationId, IpcErrorCode.NotFound, null);
+        }
+        catch (Exception exception)
+        {
+            logger.Write(exception, LogLevel.Error, IpcConstants.IpcRequestFailedLog, request.CorrelationId);
+            return new IpcResponse(request.CorrelationId, IpcErrorCode.InternalError, null);
+        }
+    }
+
+    private async Task<IpcResponse> GetEventsAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        GetEventsRequest payload = IpcJson.FromPayload<GetEventsRequest>(request.Payload);
+        IReadOnlyList<CalendarEventModel> result = await events.GetByPeriodAsync(
+            payload.From, payload.To, cancellationToken);
+        return Success(request.CorrelationId, new GetEventsResponse(result.Select(ToResponse).ToArray()));
+    }
+
+    private async Task<IpcResponse> CreateEventAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        CreateEventRequest payload = IpcJson.FromPayload<CreateEventRequest>(request.Payload);
+        CalendarEventModel result = await events.CreateAsync(ToApplication(payload.Event), cancellationToken);
+        return Success(request.CorrelationId, ToResponse(result));
+    }
+
+    private async Task<IpcResponse> UpdateEventAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        UpdateEventRequest payload = IpcJson.FromPayload<UpdateEventRequest>(request.Payload);
+        CalendarEventModel result = await events.UpdateAsync(
+            payload.Id, ToApplication(payload.Event), cancellationToken);
+        return Success(request.CorrelationId, ToResponse(result));
+    }
+
+    private async Task<IpcResponse> DeleteEventAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        DeleteEventRequest payload = IpcJson.FromPayload<DeleteEventRequest>(request.Payload);
+        await events.DeleteAsync(payload.Id, cancellationToken);
+        return Success(request.CorrelationId, new DeleteEventResponse(payload.Id));
+    }
+
+    private static IpcResponse Success<T>(Guid correlationId, T payload) =>
+        new(correlationId, IpcErrorCode.None, IpcJson.ToPayload(payload));
+
+    private static SaveCalendarEventModel ToApplication(SaveEventDto source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(source.Reminders);
+        return new SaveCalendarEventModel(
+            source.Title,
+            source.StartsAt,
+            source.EndsAt,
+            source.TimeZoneId,
+            source.IsEnabled,
+            source.Reminders.Select(ToApplicationReminder).ToArray());
+    }
+
+    private static ReminderRuleModel ToApplicationReminder(ReminderRuleDto rule)
+    {
+        ArgumentNullException.ThrowIfNull(rule);
+        return new ReminderRuleModel(
+            rule.LeadTime, ToDomainChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval);
+    }
+
+    private static CalendarEventResponse ToResponse(CalendarEventModel source) => new(
+        source.Id,
+        source.Title,
+        source.StartsAtUtc,
+        source.EndsAtUtc,
+        source.TimeZoneId,
+        source.IsEnabled,
+        source.Reminders.Select(rule => new ReminderRuleDto(
+            rule.LeadTime, ToContractChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval)).ToArray());
+
+    private static ReminderChannel ToDomainChannel(ReminderChannelCode channel) => channel switch
+    {
+        ReminderChannelCode.Desktop => ReminderChannel.Desktop,
+        ReminderChannelCode.Email => ReminderChannel.Email,
+        _ => throw new ArgumentOutOfRangeException(nameof(channel))
+    };
+
+    private static ReminderChannelCode ToContractChannel(ReminderChannel channel) => channel switch
+    {
+        ReminderChannel.Desktop => ReminderChannelCode.Desktop,
+        ReminderChannel.Email => ReminderChannelCode.Email,
+        _ => throw new ArgumentOutOfRangeException(nameof(channel))
+    };
+}
