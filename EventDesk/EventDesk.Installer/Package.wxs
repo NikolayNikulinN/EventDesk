@@ -6,13 +6,34 @@
            Scope="perMachine">
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="EventDesk">
-        <Component Id="InstallFolder" Guid="*">
+        <Component Id="InstallFolder" Guid="8B596A61-3F0E-4522-A7A2-B304E0A9DFF1">
           <CreateFolder />
         </Component>
       </Directory>
     </StandardDirectory>
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="EVENTDESKDATAROOT" Name="EventDesk">
+        <Directory Id="EVENTDESKDATADIR" Name="Data">
+          <Component Id="EventDeskDataDirectory" Guid="39771591-9C61-4D2A-8F04-FC2B4A3EE945" Permanent="yes">
+            <CreateFolder>
+              <PermissionEx Sddl="D:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)" />
+            </CreateFolder>
+          </Component>
+          <Component Id="EventDeskInitialDatabase" Guid="*" Permanent="yes" NeverOverwrite="yes">
+            <File Id="EventDeskDatabaseFile"
+                  Source="$(sys.SOURCEFILEDIR)..\DataBase\EventDesk.db"
+                  Name="EventDesk.db"
+                  KeyPath="yes">
+              <PermissionEx Sddl="D:P(A;;FA;;;SY)(A;;FA;;;BA)" />
+            </File>
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
     <Feature Id="MainFeature" Title="EventDesk" Level="1">
       <ComponentRef Id="InstallFolder" />
+      <ComponentRef Id="EventDeskDataDirectory" />
+      <ComponentRef Id="EventDeskInitialDatabase" />
     </Feature>
   </Package>
 </Wix>

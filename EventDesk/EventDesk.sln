@@ -23,7 +23,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{345DA1F0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{34D21DC3-0EB5-48E8-81A5-E50811E2630C}"
 	ProjectSection(SolutionItems) = preProject
+		Docs\database.md = Docs\database.md
 		Docs\event-model.md = Docs\event-model.md
+		Docs\ProjectArchitecture.docx = Docs\ProjectArchitecture.docx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataBase", "DataBase", "{7E7C6058-28B9-4B1D-96BE-05F55B520D84}"
+	ProjectSection(SolutionItems) = preProject
+		DataBase\EventDesk.db = DataBase\EventDesk.db
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Domain.Tests", "Tests\EventDesk.Domain.Tests\EventDesk.Domain.Tests.csproj", "{7B668730-D953-4F0D-95F3-3096AEAEFCED}"
@@ -215,13 +222,13 @@ Global
 		{2295B924-0C09-47CD-A2EB-BB78D89F6EAD}.Release|x86.ActiveCfg = Release|Any CPU
 		{2295B924-0C09-47CD-A2EB-BB78D89F6EAD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7B668730-D953-4F0D-95F3-3096AEAEFCED} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
 		{FDAB1FE2-AFDA-408E-A27F-A02931BE2F8D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
 		{F7C1AB73-8432-435E-95B3-6CD4743F3D5D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F16FB6CB-F620-4312-A0EC-5C7C1D190ABF}

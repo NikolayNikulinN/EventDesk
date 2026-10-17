@@ -2,6 +2,9 @@
 AGENTS.md
 **/AGENTS.md
 
+# Personal project notes
+Docs/ProjectArchitecture.docx
+
 # .NET build output
 [Bb]in/
 [Oo]bj/
@@ -41,6 +44,7 @@ packages/
 *.log
 logs/
 *.db
+!DataBase/EventDesk.db
 *.db-shm
 *.db-wal
 *.sqlite
