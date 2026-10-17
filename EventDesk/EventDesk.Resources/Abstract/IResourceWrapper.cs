@@ -15,6 +15,18 @@ public interface IResourceWrapper
 
     string Calendar { get; }
 
+    string RefreshEvents { get; }
+
+    string LoadingEvents { get; }
+
+    string NoEventsThisWeek { get; }
+
+    string ServiceUnavailable { get; }
+
+    string ServiceRequestTimedOut { get; }
+
+    string CalendarLoadFailed { get; }
+
     string History { get; }
 
     string Settings { get; }

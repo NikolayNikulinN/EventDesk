@@ -21,6 +21,18 @@ public sealed class ResourceWrapper : IResourceWrapper
 
     public string Calendar => GetString(nameof(Calendar));
 
+    public string RefreshEvents => GetString(nameof(RefreshEvents));
+
+    public string LoadingEvents => GetString(nameof(LoadingEvents));
+
+    public string NoEventsThisWeek => GetString(nameof(NoEventsThisWeek));
+
+    public string ServiceUnavailable => GetString(nameof(ServiceUnavailable));
+
+    public string ServiceRequestTimedOut => GetString(nameof(ServiceRequestTimedOut));
+
+    public string CalendarLoadFailed => GetString(nameof(CalendarLoadFailed));
+
     public string History => GetString(nameof(History));
 
     public string Settings => GetString(nameof(Settings));
