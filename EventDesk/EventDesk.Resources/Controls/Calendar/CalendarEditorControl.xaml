@@ -161,6 +161,11 @@
                       ItemsSource="{Binding ReminderOptions}"
                       DisplayMemberPath="Label"
                       SelectedItem="{Binding SelectedReminder, Mode=TwoWay}" />
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EmailReminder}" />
+            <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                      ItemsSource="{Binding ReminderOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{Binding SelectedEmailReminder, Mode=TwoWay}" />
           </StackPanel>
 
           <CheckBox Margin="{StaticResource CalendarEditorFieldMargin}"

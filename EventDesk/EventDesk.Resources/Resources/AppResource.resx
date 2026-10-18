@@ -226,4 +226,93 @@
 	<data name="HistoryStatusDelivered" xml:space="preserve"><value>Delivered</value></data>
 	<data name="HistoryStatusFailed" xml:space="preserve"><value>Failed</value></data>
 	<data name="HistoryStatusCanceled" xml:space="preserve"><value>Canceled</value></data>
+	<data name="EmailReminder" xml:space="preserve"><value>Email reminder</value></data>
+	<data name="EmailSettingsHeading" xml:space="preserve"><value>Email delivery</value></data>
+	<data name="EmailSettingsDescription" xml:space="preserve"><value>Configure email reminders through the service. Use an app password where required. Enter it again when changing the server, account or sender.</value></data>
+	<data name="EmailEnabled" xml:space="preserve"><value>Enable email delivery</value></data>
+	<data name="EmailHost" xml:space="preserve"><value>SMTP host:</value></data>
+	<data name="EmailHostExample" xml:space="preserve"><value>smtp.example.com</value></data>
+	<data name="EmailHostRequired" xml:space="preserve"><value>Enter an SMTP host.</value></data>
+	<data name="EmailHostInvalid" xml:space="preserve"><value>Enter a valid host name (up to 253 characters).</value></data>
+	<data name="EmailPort" xml:space="preserve"><value>SMTP port:</value></data>
+	<data name="EmailPortExampleStartTls" xml:space="preserve"><value>587</value></data>
+	<data name="EmailPortExampleImplicitTls" xml:space="preserve"><value>465</value></data>
+	<data name="EmailPortInvalidStartTls" xml:space="preserve"><value>Use port 587 for STARTTLS.</value></data>
+	<data name="EmailPortInvalidImplicitTls" xml:space="preserve"><value>Use port 465 for implicit TLS.</value></data>
+	<data name="EmailSecurity" xml:space="preserve"><value>Connection security:</value></data>
+	<data name="EmailImplicitTls" xml:space="preserve"><value>Use implicit TLS (port 465); otherwise STARTTLS (port 587)</value></data>
+	<data name="EmailUserName" xml:space="preserve"><value>SMTP user name:</value></data>
+	<data name="EmailUserNameExample" xml:space="preserve"><value>user@example.com</value></data>
+	<data name="EmailUserNameRequired" xml:space="preserve"><value>Enter the SMTP user name.</value></data>
+	<data name="EmailUserNameInvalid" xml:space="preserve"><value>The SMTP user name must be no longer than 320 characters.</value></data>
+	<data name="EmailPassword" xml:space="preserve"><value>SMTP password:</value></data>
+	<data name="EmailPasswordExample" xml:space="preserve"><value>App password from your mail provider</value></data>
+	<data name="EmailPasswordRequired" xml:space="preserve"><value>Enter an SMTP password.</value></data>
+	<data name="EmailPasswordReenter" xml:space="preserve"><value>Enter the password again after changing the server, account or sender.</value></data>
+	<data name="EmailPasswordInvalid" xml:space="preserve"><value>The password must be no longer than 1024 characters.</value></data>
+	<data name="EmailPasswordSaved" xml:space="preserve"><value>A password is saved. Leave this blank unless changing the server, account or sender.</value></data>
+	<data name="EmailPasswordMissing" xml:space="preserve"><value>No password is saved.</value></data>
+	<data name="EmailFromAddress" xml:space="preserve"><value>From address:</value></data>
+	<data name="EmailFromAddressExample" xml:space="preserve"><value>reminders@example.com</value></data>
+	<data name="EmailFromAddressRequired" xml:space="preserve"><value>Enter the sender address.</value></data>
+	<data name="EmailFromAddressInvalid" xml:space="preserve"><value>Enter a valid sender email address.</value></data>
+	<data name="EmailRecipientAddress" xml:space="preserve"><value>Email address:</value></data>
+	<data name="EmailRecipientExample" xml:space="preserve"><value>recipient@example.com</value></data>
+	<data name="EmailRecipientRequired" xml:space="preserve"><value>Enter a recipient email address.</value></data>
+	<data name="EmailRecipientInvalid" xml:space="preserve"><value>Enter a valid email address.</value></data>
+	<data name="EmailRecipientDuplicate" xml:space="preserve"><value>This email address is already in the list.</value></data>
+	<data name="EmailRecipientsRequired" xml:space="preserve"><value>Add at least one recipient.</value></data>
+	<data name="EmailRecipientsLimit" xml:space="preserve"><value>You can add up to 50 recipients.</value></data>
+	<data name="EmailRecipientsHeading" xml:space="preserve"><value>Reminder recipients</value></data>
+	<data name="AddRecipient" xml:space="preserve"><value>Add email</value></data>
+	<data name="EditRecipient" xml:space="preserve"><value>Edit email</value></data>
+	<data name="DeleteRecipient" xml:space="preserve"><value>Delete</value></data>
+	<data name="SaveRecipient" xml:space="preserve"><value>Save</value></data>
+	<data name="ConfirmDeleteRecipient" xml:space="preserve"><value>Delete this recipient?</value></data>
+	<data name="RecipientChangesHint" xml:space="preserve"><value>Changes to recipients take effect when you save email settings.</value></data>
+	<data name="RecipientsEmpty" xml:space="preserve"><value>No recipients added yet.</value></data>
+	<data name="SaveEmailSettings" xml:space="preserve"><value>Save email settings</value></data>
+	<data name="EmailSettingsLoading" xml:space="preserve"><value>Loading email settings...</value></data>
+	<data name="EmailSettingsSaving" xml:space="preserve"><value>Saving email settings...</value></data>
+	<data name="EmailSettingsSaved" xml:space="preserve"><value>Email settings saved.</value></data>
+	<data name="EmailSettingsInvalid" xml:space="preserve"><value>Check the SMTP host, addresses, credentials and TLS port.</value></data>
+	<data name="EmailSettingsLoadFailed" xml:space="preserve"><value>Could not load email settings. Check the service connection.</value></data>
+	<data name="EmailSettingsSaveFailed" xml:space="preserve"><value>Could not save email settings.</value></data>
+	<data name="HistoryErrorNotConfigured" xml:space="preserve"><value>Email delivery is not configured.</value></data>
+	<data name="HistoryErrorAuthentication" xml:space="preserve"><value>SMTP sign-in failed.</value></data>
+	<data name="HistoryErrorConnection" xml:space="preserve"><value>Could not connect securely to the SMTP server.</value></data>
+	<data name="HistoryErrorRejected" xml:space="preserve"><value>The SMTP server rejected the message.</value></data>
+	<data name="HistoryErrorDelivery" xml:space="preserve"><value>Delivery failed.</value></data>
+	<data name="HistoryErrorDesktopUnavailable" xml:space="preserve"><value>The desktop app is unavailable. Open EventDesk to receive the reminder.</value></data>
+	<data name="InstallerCaption" xml:space="preserve"><value>EventDesk Setup</value></data>
+	<data name="InstallerBrand" xml:space="preserve"><value>EventDesk</value></data>
+	<data name="InstallerSideCaption" xml:space="preserve"><value>CALENDAR  •  REMINDERS</value></data>
+	<data name="InstallerLoadingTitle" xml:space="preserve"><value>Preparing setup...</value></data>
+	<data name="InstallerWelcomeTitle" xml:space="preserve"><value>Welcome to&#xA;EventDesk</value></data>
+	<data name="InstallerWelcomeBody" xml:space="preserve"><value>Your calendar and reminders,&#xA;all in one place.</value></data>
+	<data name="InstallerInstallButton" xml:space="preserve"><value>Install</value></data>
+	<data name="InstallerProgressTitle" xml:space="preserve"><value>Installing&#xA;EventDesk</value></data>
+	<data name="InstallerProgressBody" xml:space="preserve"><value>Please wait while setup finishes.</value></data>
+	<data name="InstallerOverallProgressPackageText" xml:space="preserve"><value>Preparing files...</value></data>
+	<data name="InstallerModifyTitle" xml:space="preserve"><value>EventDesk is&#xA;installed</value></data>
+	<data name="InstallerModifyBody" xml:space="preserve"><value>You can remove EventDesk from this computer.</value></data>
+	<data name="InstallerUninstallButton" xml:space="preserve"><value>Uninstall</value></data>
+	<data name="InstallerSuccessTitle" xml:space="preserve"><value>Ready to go</value></data>
+	<data name="InstallerUninstallSuccessTitle" xml:space="preserve"><value>EventDesk was&#xA;removed</value></data>
+	<data name="InstallerSuccessBody" xml:space="preserve"><value>Setup completed successfully.</value></data>
+	<data name="InstallerFailureTitle" xml:space="preserve"><value>Setup could not&#xA;finish</value></data>
+	<data name="InstallerFailureBody" xml:space="preserve"><value>Check the details below, then try again.</value></data>
+	<data name="InstallerFailureLogLink" xml:space="preserve"><value>&lt;a href="#"&gt;Open installation log&lt;/a&gt;</value></data>
+	<data name="InstallerCloseButton" xml:space="preserve"><value>Close</value></data>
+	<data name="InstallerHelpTitle" xml:space="preserve"><value>EventDesk Setup</value></data>
+	<data name="InstallerConfirmCancelMessage" xml:space="preserve"><value>Cancel EventDesk setup?</value></data>
+	<data name="InstallerExecuteUpgradeRelatedBundleMessage" xml:space="preserve"><value>Previous version</value></data>
+	<data name="InstallerFilesInUseTitle" xml:space="preserve"><value>Files in use</value></data>
+	<data name="InstallerFilesInUseLabel" xml:space="preserve"><value>Close applications using files that need updating:</value></data>
+	<data name="InstallerFilesInUseNetfxCloseRadioButton" xml:space="preserve"><value>Close the applications.</value></data>
+	<data name="InstallerFilesInUseCloseRadioButton" xml:space="preserve"><value>Close and restart the applications.</value></data>
+	<data name="InstallerFilesInUseDontCloseRadioButton" xml:space="preserve"><value>Do not close them; a restart will be required.</value></data>
+	<data name="InstallerFilesInUseRetryButton" xml:space="preserve"><value>Retry</value></data>
+	<data name="InstallerFilesInUseIgnoreButton" xml:space="preserve"><value>Ignore</value></data>
+	<data name="InstallerFilesInUseExitButton" xml:space="preserve"><value>Exit</value></data>
 </root>

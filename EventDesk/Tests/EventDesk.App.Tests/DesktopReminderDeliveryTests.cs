@@ -16,7 +16,7 @@ public sealed class DesktopReminderDeliveryTests
             Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
         string pipeName = $"EventDesk.Reminder.Test.{Guid.NewGuid():N}";
-        DesktopReminderMessage message = new(Guid.NewGuid(), Guid.NewGuid(), "Planning");
+        DesktopReminderMessage message = new(Guid.NewGuid(), Guid.NewGuid(), "Planning", "Prepare agenda");
         int displayed = 0;
 
         try
@@ -36,6 +36,7 @@ public sealed class DesktopReminderDeliveryTests
             NamedPipeDesktopReminderServer server = new(pipeName);
             Task serverTask = server.RunAsync((incoming, _) =>
             {
+                Assert.Equal(message.EventDescription, incoming.EventDescription);
                 if (receipts.TryRecord(incoming.DeliveryId)) displayed++;
                 return Task.CompletedTask;
             }, stopping.Token);

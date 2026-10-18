@@ -1,7 +1,16 @@
 <Project Sdk="WixToolset.Sdk/7.0.0">
   <PropertyGroup>
-    <OutputType>Package</OutputType>
-    <Platforms>x86;x64</Platforms>
+    <OutputType>Bundle</OutputType>
+    <Platforms>x64</Platforms>
     <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="**/*.wxs" />
+    <Compile Include="Bundle.wxs" />
+    <PackageReference Include="WixToolset.BootstrapperApplications.wixext" />
+    <ProjectReference Include="Package\EventDesk.Installer.Package.wixproj" />
+  </ItemGroup>
+  <Target Name="GenerateInstallerLocalization" BeforeTargets="CoreCompile">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\GenerateInstallerLocalization.ps1&quot; -ResourceFile &quot;$(MSBuildProjectDirectory)\..\EventDesk.Resources\Resources\AppResource.resx&quot; -OutputFile &quot;$(MSBuildProjectDirectory)\obj\InstallerTheme.en-us.wxl&quot;" />
+  </Target>
 </Project>

@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.IO;
 using System.Windows.Media.Imaging;
 using EventDesk.App.Views;
 using EventDesk.Contracts.Reminders;
@@ -58,7 +59,9 @@ public sealed class TrayNotificationService(
             {
                 if (notifyIcon is null) throw new InvalidOperationException();
                 notifyIcon.ShowBalloonTip(10000, resources.ReminderNotificationTitle,
-                    message.EventTitle, Forms.ToolTipIcon.Info);
+                    string.IsNullOrWhiteSpace(message.EventDescription)
+                        ? message.EventTitle : $"{message.EventTitle}{Environment.NewLine}{message.EventDescription}",
+                    Forms.ToolTipIcon.Info);
                 shown = true;
             }, System.Windows.Threading.DispatcherPriority.Normal, cancellationToken);
         }
