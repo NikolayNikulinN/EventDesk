@@ -149,4 +149,45 @@
 	<data name="OkButton" xml:space="preserve">
 		<value>OK</value>
 	</data>
+	<data name="PreviousWeek" xml:space="preserve"><value>Previous week</value></data>
+	<data name="NextWeek" xml:space="preserve"><value>Next week</value></data>
+	<data name="Today" xml:space="preserve"><value>Today</value></data>
+	<data name="NewEvent" xml:space="preserve"><value>New event</value></data>
+	<data name="EditEvent" xml:space="preserve"><value>Edit event</value></data>
+	<data name="EventTitle" xml:space="preserve"><value>Title</value></data>
+	<data name="EventDescription" xml:space="preserve"><value>Description for notification</value></data>
+	<data name="EventColor" xml:space="preserve"><value>Event color</value></data>
+	<data name="ColorBlue" xml:space="preserve"><value>Blue</value></data>
+	<data name="ColorGreen" xml:space="preserve"><value>Green</value></data>
+	<data name="ColorOrange" xml:space="preserve"><value>Orange</value></data>
+	<data name="ColorPurple" xml:space="preserve"><value>Purple</value></data>
+	<data name="ColorRed" xml:space="preserve"><value>Red</value></data>
+	<data name="StartDate" xml:space="preserve"><value>Start date</value></data>
+	<data name="StartTime" xml:space="preserve"><value>Start time</value></data>
+	<data name="EndDate" xml:space="preserve"><value>End date</value></data>
+	<data name="EndTime" xml:space="preserve"><value>End time</value></data>
+	<data name="Reminder" xml:space="preserve"><value>Desktop reminder</value></data>
+	<data name="NoReminder" xml:space="preserve"><value>No reminder</value></data>
+	<data name="ReminderFiveMinutes" xml:space="preserve"><value>5 minutes before</value></data>
+	<data name="ReminderFifteenMinutes" xml:space="preserve"><value>15 minutes before</value></data>
+	<data name="ReminderThirtyMinutes" xml:space="preserve"><value>30 minutes before</value></data>
+	<data name="ReminderOneHour" xml:space="preserve"><value>1 hour before</value></data>
+	<data name="EventEnabled" xml:space="preserve"><value>Event enabled</value></data>
+	<data name="SaveEvent" xml:space="preserve"><value>Save event</value></data>
+	<data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+	<data name="DeleteEvent" xml:space="preserve"><value>Delete event</value></data>
+	<data name="ConfirmDeleteEvent" xml:space="preserve"><value>Delete this event?</value></data>
+	<data name="EventTitleRequired" xml:space="preserve"><value>Enter an event title.</value></data>
+	<data name="EventDescriptionRequired" xml:space="preserve"><value>Enter the notification description.</value></data>
+	<data name="EventDateTimeRequired" xml:space="preserve"><value>Enter valid dates and times.</value></data>
+	<data name="EventTimeInvalid" xml:space="preserve"><value>This local time does not exist in the current time zone.</value></data>
+	<data name="EventEndAfterStart" xml:space="preserve"><value>End must be after start.</value></data>
+	<data name="EventSaveFailed" xml:space="preserve"><value>Could not save the event.</value></data>
+	<data name="EventDeleteFailed" xml:space="preserve"><value>Could not delete the event.</value></data>
+	<data name="InvalidEventData" xml:space="preserve"><value>The event details are invalid.</value></data>
+	<data name="EventNoLongerExists" xml:space="preserve"><value>This event no longer exists. Refresh the calendar.</value></data>
+	<data name="WeekRangeFormat" xml:space="preserve"><value>{0:d MMM} – {1:d MMM yyyy}</value></data>
+	<data name="Time24HourFormat" xml:space="preserve"><value>HH:mm</value></data>
+	<data name="EventTimeRangeFormat" xml:space="preserve"><value>{0:HH:mm}–{1:HH:mm}</value></data>
+	<data name="ApplyingEventChanges" xml:space="preserve"><value>Applying changes...</value></data>
 </root>

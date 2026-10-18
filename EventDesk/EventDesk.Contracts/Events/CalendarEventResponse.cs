@@ -7,4 +7,6 @@ public sealed record CalendarEventResponse(
     DateTimeOffset EndsAtUtc,
     string TimeZoneId,
     bool IsEnabled,
-    IReadOnlyList<ReminderRuleDto> Reminders);
+    IReadOnlyList<ReminderRuleDto> Reminders,
+    string? Description = null,
+    string? ColorHex = null);

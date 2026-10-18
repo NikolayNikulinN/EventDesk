@@ -22,6 +22,14 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(7)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
                     b.Property<long>("EndsAtUtc")
                         .HasColumnType("INTEGER")
                         .HasColumnName("EndsAtUtcTicks");

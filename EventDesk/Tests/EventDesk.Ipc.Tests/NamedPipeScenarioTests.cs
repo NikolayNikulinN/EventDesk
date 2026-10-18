@@ -1,4 +1,7 @@
 using System.Collections.Concurrent;
+using EventDesk.App.Services;
+using EventDesk.App.ViewModels.Pages;
+using EventDesk.App.Models;
 using EventDesk.Application;
 using EventDesk.Constants;
 using EventDesk.Contracts.Events;
@@ -11,6 +14,7 @@ using EventDesk.Ipc.Server;
 using EventDesk.Logger.Abstract;
 using EventDesk.Logger.Enums;
 using EventDesk.Service;
+using EventDesk.Resources.Wrappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -71,26 +75,37 @@ public sealed class NamedPipeScenarioTests
                     start.AddHours(1),
                     TimeZoneInfo.Utc.Id,
                     true,
-                    [new ReminderRuleDto(TimeSpan.FromMinutes(15), ReminderChannelCode.Desktop, 1, null)]);
+                    [new ReminderRuleDto(TimeSpan.FromMinutes(15), ReminderChannelCode.Desktop, 1, null)],
+                    "Planning reminder",
+                    "#259B70");
 
                 CalendarEventResponse created = await client.SendAsync<CreateEventRequest, CalendarEventResponse>(
                     IpcOperation.CreateEvent, new CreateEventRequest(original), cancellationToken);
                 Assert.Equal(original.Title, created.Title);
+                Assert.Equal(original.Description, created.Description);
+                Assert.Equal(original.ColorHex, created.ColorHex);
                 Assert.Single(created.Reminders);
 
                 GetEventsRequest period = new(start.AddMinutes(-1), start.AddHours(2));
                 GetEventsResponse read = await client.SendAsync<GetEventsRequest, GetEventsResponse>(
                     IpcOperation.GetEvents, period, cancellationToken);
-                Assert.Equal(created.Id, Assert.Single(read.Events).Id);
+                CalendarEventResponse readEvent = Assert.Single(read.Events);
+                Assert.Equal(created.Id, readEvent.Id);
+                Assert.Equal(original.Description, readEvent.Description);
+                Assert.Equal(original.ColorHex, readEvent.ColorHex);
 
                 SaveEventDto changed = original with
                 {
                     Title = "Updated planning",
+                    Description = "Updated reminder",
+                    ColorHex = "#D88436",
                     Reminders = [new ReminderRuleDto(TimeSpan.FromMinutes(30), ReminderChannelCode.Email, 1, null)]
                 };
                 CalendarEventResponse updated = await client.SendAsync<UpdateEventRequest, CalendarEventResponse>(
                     IpcOperation.UpdateEvent, new UpdateEventRequest(created.Id, changed), cancellationToken);
                 Assert.Equal(changed.Title, updated.Title);
+                Assert.Equal(changed.Description, updated.Description);
+                Assert.Equal(changed.ColorHex, updated.ColorHex);
                 Assert.Equal(ReminderChannelCode.Email, Assert.Single(updated.Reminders).Channel);
 
                 DeleteEventResponse deleted = await client.SendAsync<DeleteEventRequest, DeleteEventResponse>(
@@ -99,6 +114,30 @@ public sealed class NamedPipeScenarioTests
                 GetEventsResponse afterDelete = await client.SendAsync<GetEventsRequest, GetEventsResponse>(
                     IpcOperation.GetEvents, period, cancellationToken);
                 Assert.Empty(afterDelete.Events);
+
+                CalendarViewModel calendar = new(
+                    new CalendarEventIpcClient(client), new ResourceWrapper(), new NullLogger());
+                await calendar.RefreshCommand.ExecuteAsync(null);
+                calendar.NewEventCommand.Execute(null);
+                calendar.EventTitle = "From calendar UI";
+                calendar.EventDescription = "Calendar UI reminder";
+                calendar.StartTime = "09:00";
+                calendar.EndTime = "10:00";
+                await calendar.SaveEventCommand.ExecuteAsync(null);
+                CalendarEventItem uiCreated = Assert.Single(calendar.Days.SelectMany(day => day.Events));
+
+                calendar.EditEventCommand.Execute(uiCreated);
+                calendar.EventTitle = "Updated in calendar UI";
+                calendar.IsEnabled = false;
+                await calendar.SaveEventCommand.ExecuteAsync(null);
+                CalendarEventItem uiUpdated = Assert.Single(calendar.Days.SelectMany(day => day.Events));
+                Assert.Equal("Updated in calendar UI", uiUpdated.Title);
+                Assert.False(uiUpdated.IsEnabled);
+
+                calendar.EditEventCommand.Execute(uiUpdated);
+                calendar.RequestDeleteCommand.Execute(null);
+                await calendar.DeleteEventCommand.ExecuteAsync(null);
+                Assert.Empty(calendar.Days.SelectMany(day => day.Events));
 
                 IpcException invalidPeriod = await Assert.ThrowsAsync<IpcException>(() =>
                     client.SendAsync<GetEventsRequest, GetEventsResponse>(

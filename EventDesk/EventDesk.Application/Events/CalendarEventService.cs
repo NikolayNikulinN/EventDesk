@@ -12,7 +12,8 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
     {
         ArgumentNullException.ThrowIfNull(model);
         CalendarEvent calendarEvent = CalendarEvent.Create(
-        Guid.NewGuid(), model.Title, model.StartsAt, model.EndsAt, model.TimeZoneId);
+            Guid.NewGuid(), model.Title, model.StartsAt, model.EndsAt, model.TimeZoneId,
+            model.Description, model.ColorHex);
 
         ApplyReminders(calendarEvent, model.Reminders);
         if (!model.IsEnabled)
@@ -36,6 +37,7 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
         }
 
         calendarEvent.UpdateTitle(model.Title);
+        calendarEvent.UpdateDetails(model.Description, model.ColorHex);
         calendarEvent.Reschedule(model.StartsAt, model.EndsAt, model.TimeZoneId);
         ApplyReminders(calendarEvent, model.Reminders);
         if (model.IsEnabled)
@@ -103,5 +105,7 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
         calendarEvent.EndsAtUtc,
         calendarEvent.TimeZoneId,
         calendarEvent.IsEnabled,
-        calendarEvent.Reminders.Select(reminder => new ReminderRuleModel(reminder.LeadTime, reminder.Channel, reminder.OccurrenceCount, reminder.RepeatInterval)).ToArray());
+        calendarEvent.Reminders.Select(reminder => new ReminderRuleModel(reminder.LeadTime, reminder.Channel, reminder.OccurrenceCount, reminder.RepeatInterval)).ToArray(),
+        calendarEvent.Description,
+        calendarEvent.ColorHex);
 }

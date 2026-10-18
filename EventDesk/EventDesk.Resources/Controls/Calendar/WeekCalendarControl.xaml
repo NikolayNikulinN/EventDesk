@@ -1,0 +1,83 @@
+<UserControl x:Class="EventDesk.Resources.Controls.Calendar.WeekCalendarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:calendar="clr-namespace:EventDesk.Resources.Controls.Calendar">
+  <Border Style="{StaticResource CalendarWeekPanelStyle}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <ScrollViewer x:Name="HeaderScrollViewer"
+                    Width="{Binding ElementName=TimelineScrollViewer, Path=ViewportWidth}"
+                    Height="{x:Static calendar:CalendarLayout.DayHeaderHeight}"
+                    HorizontalAlignment="Left"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Disabled"
+                    ScrollChanged="HeaderScrollChanged">
+        <StackPanel Orientation="Horizontal">
+          <Border Width="{x:Static calendar:CalendarLayout.TimeRulerWidth}"
+                  BorderBrush="{StaticResource CalendarGridLineBrush}"
+                  BorderThickness="0,0,0,1" />
+          <ItemsControl ItemsSource="{Binding Days}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Width="{Binding DayWidth, RelativeSource={RelativeSource AncestorType={x:Type calendar:WeekCalendarControl}}}"
+                        BorderBrush="{StaticResource CalendarGridLineBrush}"
+                        BorderThickness="1,0,0,0">
+                  <Button Style="{StaticResource CalendarDayHeaderStyle}"
+                          Command="{Binding DataContext.SelectDateCommand, RelativeSource={RelativeSource AncestorType={x:Type calendar:WeekCalendarControl}}}"
+                          CommandParameter="{Binding Date}">
+                    <StackPanel>
+                      <TextBlock HorizontalAlignment="Center" Text="{Binding DayName}" />
+                      <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Text="{Binding DayNumber}" />
+                    </StackPanel>
+                  </Button>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+
+      <ScrollViewer x:Name="TimelineScrollViewer"
+                    Grid.Row="1"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    Loaded="TimelineLoaded"
+                    SizeChanged="TimelineSizeChanged"
+                    ScrollChanged="TimelineScrollChanged">
+        <StackPanel Orientation="Horizontal">
+          <ItemsControl Width="{x:Static calendar:CalendarLayout.TimeRulerWidth}"
+                        ItemsSource="{Binding HourLabels}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Height="{Binding HourHeight, RelativeSource={RelativeSource AncestorType={x:Type calendar:WeekCalendarControl}}}" BorderBrush="{StaticResource CalendarGridLineBrush}" BorderThickness="0,0,0,1">
+                  <TextBlock Style="{StaticResource CalendarHourLabelStyle}" Text="{Binding}" />
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <ItemsControl ItemsSource="{Binding Days}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <calendar:DayColumnControl />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </Border>
+</UserControl>

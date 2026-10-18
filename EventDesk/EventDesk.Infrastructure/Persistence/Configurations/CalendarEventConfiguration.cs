@@ -19,6 +19,8 @@ public sealed class CalendarEventConfiguration : IEntityTypeConfiguration<Calend
         builder.HasKey(calendarEvent => calendarEvent.Id);
         builder.Property(calendarEvent => calendarEvent.Id).ValueGeneratedNever();
         builder.Property(calendarEvent => calendarEvent.Title).IsRequired().HasMaxLength(500);
+        builder.Property(calendarEvent => calendarEvent.Description).HasMaxLength(2000);
+        builder.Property(calendarEvent => calendarEvent.ColorHex).HasMaxLength(7);
         builder.Property(calendarEvent => calendarEvent.StartsAtUtc)
             .HasColumnName("StartsAtUtcTicks").HasConversion(utcTicksConverter).IsRequired();
         builder.Property(calendarEvent => calendarEvent.EndsAtUtc)

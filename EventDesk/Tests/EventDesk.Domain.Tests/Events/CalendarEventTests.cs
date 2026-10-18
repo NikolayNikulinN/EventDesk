@@ -83,6 +83,29 @@ public sealed class CalendarEventTests
     }
 
     [Fact]
+    public void UpdateDetails_ValidInput_StoresDescriptionAndColor()
+    {
+        CalendarEvent calendarEvent = CreateEvent();
+
+        calendarEvent.UpdateDetails("  Reminder message  ", "#259b70");
+
+        Assert.Equal("Reminder message", calendarEvent.Description);
+        Assert.Equal("#259B70", calendarEvent.ColorHex);
+    }
+
+    [Fact]
+    public void UpdateDetails_InvalidColor_PreservesPreviousDetails()
+    {
+        CalendarEvent calendarEvent = CreateEvent();
+        calendarEvent.UpdateDetails("Original message", "#425EBA");
+
+        Assert.Throws<ArgumentException>(() => calendarEvent.UpdateDetails("Changed message", "blue"));
+
+        Assert.Equal("Original message", calendarEvent.Description);
+        Assert.Equal("#425EBA", calendarEvent.ColorHex);
+    }
+
+    [Fact]
     public void AddReminder_DuplicateRule_Throws()
     {
         CalendarEvent calendarEvent = CreateEvent();

@@ -8,19 +8,26 @@ public sealed class CalendarEvent
 {
     private readonly List<ReminderRule> reminders = [];
 
-    private CalendarEvent(Guid id, string title, DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc, string timeZoneId)
+    private CalendarEvent(Guid id, string title, DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc,
+        string timeZoneId, string? description, string? colorHex)
     {
         Id = id;
         Title = title;
         StartsAtUtc = startsAtUtc;
         EndsAtUtc = endsAtUtc;
         TimeZoneId = timeZoneId;
+        Description = description;
+        ColorHex = colorHex;
         IsEnabled = true;
     }
 
     public Guid Id { get; }
 
     public string Title { get; private set; }
+
+    public string? Description { get; private set; }
+
+    public string? ColorHex { get; private set; }
 
     public DateTimeOffset StartsAtUtc { get; private set; }
 
@@ -40,7 +47,9 @@ public sealed class CalendarEvent
         string title,
         DateTimeOffset startsAt,
         DateTimeOffset endsAt,
-        string timeZoneId)
+        string timeZoneId,
+        string? description = null,
+        string? colorHex = null)
     {
         if (id == Guid.Empty)
         {
@@ -50,13 +59,23 @@ public sealed class CalendarEvent
         string validatedTitle = ValidateTitle(title);
         (DateTimeOffset startUtc, DateTimeOffset endUtc, string zoneId) = ValidateSchedule(startsAt, endsAt, timeZoneId);
 
-        return new CalendarEvent(id, validatedTitle, startUtc, endUtc, zoneId);
+        return new CalendarEvent(id, validatedTitle, startUtc, endUtc, zoneId,
+            ValidateDescription(description), ValidateColorHex(colorHex));
     }
 
     public void UpdateTitle(string title)
     {
         EnsureNotDeleted();
         Title = ValidateTitle(title);
+    }
+
+    public void UpdateDetails(string? description, string? colorHex)
+    {
+        EnsureNotDeleted();
+        string? validatedDescription = ValidateDescription(description);
+        string? validatedColorHex = ValidateColorHex(colorHex);
+        Description = validatedDescription;
+        ColorHex = validatedColorHex;
     }
 
     public void Reschedule(DateTimeOffset startsAt, DateTimeOffset endsAt, string timeZoneId)
@@ -136,6 +155,28 @@ public sealed class CalendarEvent
         }
 
         return title.Trim();
+    }
+
+    private static string? ValidateDescription(string? description)
+    {
+        string? trimmed = description?.Trim();
+        if (trimmed?.Length > 2000)
+        {
+            throw new ArgumentException(DomainValidationMessages.EventDescriptionTooLong, nameof(description));
+        }
+
+        return trimmed;
+    }
+
+    private static string? ValidateColorHex(string? colorHex)
+    {
+        if (colorHex is not null &&
+            (colorHex.Length != 7 || colorHex[0] != '#' || !colorHex.AsSpan(1).ToArray().All(Uri.IsHexDigit)))
+        {
+            throw new ArgumentException(DomainValidationMessages.EventColorInvalid, nameof(colorHex));
+        }
+
+        return colorHex?.ToUpperInvariant();
     }
 
     private static (DateTimeOffset StartUtc, DateTimeOffset EndUtc, string TimeZoneId) ValidateSchedule(

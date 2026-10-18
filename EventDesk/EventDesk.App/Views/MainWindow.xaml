@@ -4,10 +4,10 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="{Binding Title}"
-        Width="900"
-        Height="600"
-        MinWidth="640"
-        MinHeight="400"
+        Width="1280"
+        Height="840"
+        MinWidth="720"
+        MinHeight="520"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanResize"
@@ -38,13 +38,14 @@
           <StackPanel Margin="14,0,0,0"
                       VerticalAlignment="Center"
                       Orientation="Horizontal">
-            <Image Width="32"
-                   Height="32"
+            <Image Width="45"
+                   Height="45"
                    Source="{Binding ResourceWrapper.AppIconPath}"
+                   RenderOptions.BitmapScalingMode="HighQuality"
                    Stretch="Uniform" />
             <TextBlock Margin="10,0,0,0"
                        VerticalAlignment="Center"
-                       FontSize="14"
+                       FontSize="17"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource PrimaryTextBrush}"
                        Text="{Binding Title}" />
@@ -91,6 +92,11 @@
         <ui:NavigationView x:Name="RootNavigationView"
                            MenuItemsSource="{Binding MenuItems}"
                            FooterMenuItemsSource="{Binding FooterMenuItems}"
+                           PaneDisplayMode="Left"
+                           IsPaneOpen="False"
+                           OpenPaneLength="220"
+                           CompactPaneLength="48"
+                           IsBackButtonVisible="Collapsed"
                            HeaderVisibility="Collapsed" />
       </Grid>
     </Grid>

@@ -6,4 +6,16 @@
   <Color x:Key="TitleBarHoverColor">#FFE1E8F4</Color>
   <Color x:Key="TitleBarPressedColor">#FFD3DFF0</Color>
   <Color x:Key="WindowBorderColor">#FFD8E0EB</Color>
+  <Color x:Key="CalendarToolbarBorderColor">#FFB9C7DC</Color>
+  <Color x:Key="CalendarSurfaceColor">#FFFFFFFF</Color>
+  <Color x:Key="CalendarEditorBackdropColor">#66202734</Color>
+  <Color x:Key="CalendarAccentColor">#FF425EBA</Color>
+  <Color x:Key="CalendarAccentHoverColor">#FF354D9D</Color>
+  <Color x:Key="CalendarMutedTextColor">#FF667184</Color>
+  <Color x:Key="CalendarGridLineColor">#FFE7EBF2</Color>
+  <Color x:Key="CalendarEventColor">#FFE8EDFF</Color>
+  <Color x:Key="MiniCalendarSelectedDayColor">#FFEBEEF3</Color>
+  <Color x:Key="MiniCalendarTodayColor">#FFD4E2FF</Color>
+  <Color x:Key="CalendarDisabledEventColor">#FFEEF0F3</Color>
+  <Color x:Key="CalendarErrorColor">#FFB42335</Color>
 </ResourceDictionary>

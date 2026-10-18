@@ -89,7 +89,9 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
             source.EndsAt,
             source.TimeZoneId,
             source.IsEnabled,
-            source.Reminders.Select(ToApplicationReminder).ToArray());
+            source.Reminders.Select(ToApplicationReminder).ToArray(),
+            source.Description,
+            source.ColorHex);
     }
 
     private static ReminderRuleModel ToApplicationReminder(ReminderRuleDto rule)
@@ -107,7 +109,9 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
         source.TimeZoneId,
         source.IsEnabled,
         source.Reminders.Select(rule => new ReminderRuleDto(
-            rule.LeadTime, ToContractChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval)).ToArray());
+            rule.LeadTime, ToContractChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval)).ToArray(),
+        source.Description,
+        source.ColorHex);
 
     private static ReminderChannel ToDomainChannel(ReminderChannelCode channel) => channel switch
     {

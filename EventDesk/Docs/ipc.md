@@ -1,7 +1,8 @@
 # First IPC scenario
 
-The desktop calendar page requests events for the current local week when it
-opens and when the user selects Refresh. The WPF process calls
+The desktop calendar page requests events for the selected local week when it
+opens, when the user changes dates, and when the user selects Refresh. The editor
+uses the same client for create, update and delete requests. The WPF process calls
 `CalendarEventIpcClient`; only the Windows Service opens SQLite.
 
 ```text
@@ -32,4 +33,6 @@ suitable for a multi-user installation.
 
 `Tests/EventDesk.Ipc.Tests` exercises the request path through the actual
 pipe, service dispatcher and SQLite, including a disconnected client,
-separate request scopes, domain errors, request timeout and cancellation.
+separate request scopes, domain errors, request timeout and cancellation. It
+also runs the calendar ViewModel's create, update and delete commands through
+that path.
