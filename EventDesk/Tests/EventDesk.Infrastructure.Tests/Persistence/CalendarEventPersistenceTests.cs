@@ -1,5 +1,6 @@
 using EventDesk.Application.Events;
 using EventDesk.Application.Events.Models;
+using EventDesk.Domain.Events;
 using EventDesk.Domain.Reminders;
 using EventDesk.Infrastructure.Persistence;
 using EventDesk.Infrastructure.Persistence.Repositories;
@@ -100,4 +101,62 @@ public sealed class CalendarEventPersistenceTests
 
     private static CalendarEventService CreateService(EventDeskDbContext dbContext) =>
         new(new CalendarEventRepository(dbContext), new UnitOfWork(dbContext));
+
+    [Fact]
+    public async Task RecurringEventsPersistAndSkipDatesMissingFromThePeriod()
+    {
+        CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+        string directory = Path.Combine(Path.GetTempPath(), "EventDeskTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string databasePath = Path.Combine(directory, "EventDesk.db");
+
+        try
+        {
+            DbContextOptions<EventDeskDbContext> options = new DbContextOptionsBuilder<EventDeskDbContext>()
+                .UseSqlite($"Data Source={databasePath};Foreign Keys=True")
+                .Options;
+            await using (EventDeskDbContext setup = new(options))
+            {
+                await setup.Database.MigrateAsync(cancellationToken);
+            }
+
+            await using (EventDeskDbContext createContext = new(options))
+            {
+                CalendarEventService service = CreateService(createContext);
+                await service.CreateAsync(new SaveCalendarEventModel(
+                    "Leap birthday", new DateTimeOffset(2028, 2, 29, 11, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2028, 2, 29, 17, 0, 0, TimeSpan.Zero), "UTC", true, [],
+                    Recurrence: EventRecurrenceKind.Yearly, RecurrenceMonth: 2,
+                    RecurrenceDay: 29, NotificationIntervalMinutes: 180), cancellationToken);
+                await service.CreateAsync(new SaveCalendarEventModel(
+                    "Month end", new DateTimeOffset(2026, 1, 31, 11, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2026, 1, 31, 17, 0, 0, TimeSpan.Zero), "UTC", true, [],
+                    Recurrence: EventRecurrenceKind.Monthly, RecurrenceDay: 31,
+                    NotificationIntervalMinutes: 180), cancellationToken);
+            }
+
+            await using (EventDeskDbContext readContext = new(options))
+            {
+                CalendarEventService service = CreateService(readContext);
+                Assert.Empty(await service.GetByPeriodAsync(
+                    new DateTimeOffset(2027, 2, 1, 0, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2027, 3, 1, 0, 0, 0, TimeSpan.Zero), cancellationToken));
+                CalendarEventModel leap = Assert.Single(await service.GetByPeriodAsync(
+                    new DateTimeOffset(2032, 2, 29, 0, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2032, 3, 1, 0, 0, 0, TimeSpan.Zero), cancellationToken));
+                Assert.Equal(EventRecurrenceKind.Yearly, leap.Recurrence);
+                Assert.Equal(11, leap.StartsAtUtc.Hour);
+                Assert.Equal(17, leap.EndsAtUtc.Hour);
+                CalendarEventModel monthEnd = Assert.Single(await service.GetByPeriodAsync(
+                    new DateTimeOffset(2026, 3, 31, 0, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2026, 4, 1, 0, 0, 0, TimeSpan.Zero), cancellationToken));
+                Assert.Equal("Month end", monthEnd.Title);
+            }
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            Directory.Delete(directory, recursive: true);
+        }
+    }
 }

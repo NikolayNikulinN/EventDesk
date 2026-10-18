@@ -11,5 +11,7 @@ public interface ICalendarEventRepository
         DateTimeOffset toUtc,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<CalendarEvent>> GetRecurringAsync(CancellationToken cancellationToken = default);
+
     Task AddAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default);
 }

@@ -89,7 +89,13 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
             source.EndsAt,
             source.TimeZoneId,
             source.IsEnabled,
-            source.Reminders.Select(ToApplicationReminder).ToArray());
+            source.Reminders.Select(ToApplicationReminder).ToArray(),
+            source.Description,
+            source.ColorHex,
+            ToDomainRecurrence(source.Recurrence),
+            source.RecurrenceMonth,
+            source.RecurrenceDay,
+            source.NotificationIntervalMinutes);
     }
 
     private static ReminderRuleModel ToApplicationReminder(ReminderRuleDto rule)
@@ -107,7 +113,29 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
         source.TimeZoneId,
         source.IsEnabled,
         source.Reminders.Select(rule => new ReminderRuleDto(
-            rule.LeadTime, ToContractChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval)).ToArray());
+            rule.LeadTime, ToContractChannel(rule.Channel), rule.OccurrenceCount, rule.RepeatInterval)).ToArray(),
+        source.Description,
+        source.ColorHex,
+        ToContractRecurrence(source.Recurrence),
+        source.RecurrenceMonth,
+        source.RecurrenceDay,
+        source.NotificationIntervalMinutes);
+
+    private static EventDesk.Domain.Events.EventRecurrenceKind ToDomainRecurrence(EventRecurrenceCode recurrence) => recurrence switch
+    {
+        EventRecurrenceCode.None => EventDesk.Domain.Events.EventRecurrenceKind.None,
+        EventRecurrenceCode.Yearly => EventDesk.Domain.Events.EventRecurrenceKind.Yearly,
+        EventRecurrenceCode.Monthly => EventDesk.Domain.Events.EventRecurrenceKind.Monthly,
+        _ => throw new ArgumentOutOfRangeException(nameof(recurrence))
+    };
+
+    private static EventRecurrenceCode ToContractRecurrence(EventDesk.Domain.Events.EventRecurrenceKind recurrence) => recurrence switch
+    {
+        EventDesk.Domain.Events.EventRecurrenceKind.None => EventRecurrenceCode.None,
+        EventDesk.Domain.Events.EventRecurrenceKind.Yearly => EventRecurrenceCode.Yearly,
+        EventDesk.Domain.Events.EventRecurrenceKind.Monthly => EventRecurrenceCode.Monthly,
+        _ => throw new ArgumentOutOfRangeException(nameof(recurrence))
+    };
 
     private static ReminderChannel ToDomainChannel(ReminderChannelCode channel) => channel switch
     {

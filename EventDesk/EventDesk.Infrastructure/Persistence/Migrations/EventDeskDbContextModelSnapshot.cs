@@ -22,6 +22,14 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(7)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
                     b.Property<long>("EndsAtUtc")
                         .HasColumnType("INTEGER")
                         .HasColumnName("EndsAtUtcTicks");
@@ -30,6 +38,18 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("NotificationIntervalMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RecurrenceDay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecurrenceKind")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RecurrenceMonth")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("StartsAtUtc")
@@ -49,6 +69,8 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted", "EndsAtUtc");
+
+                    b.HasIndex("IsDeleted", "RecurrenceKind");
 
                     b.HasIndex("IsDeleted", "StartsAtUtc");
 

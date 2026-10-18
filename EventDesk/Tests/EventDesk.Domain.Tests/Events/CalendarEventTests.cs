@@ -83,6 +83,29 @@ public sealed class CalendarEventTests
     }
 
     [Fact]
+    public void UpdateDetails_ValidInput_StoresDescriptionAndColor()
+    {
+        CalendarEvent calendarEvent = CreateEvent();
+
+        calendarEvent.UpdateDetails("  Reminder message  ", "#259b70");
+
+        Assert.Equal("Reminder message", calendarEvent.Description);
+        Assert.Equal("#259B70", calendarEvent.ColorHex);
+    }
+
+    [Fact]
+    public void UpdateDetails_InvalidColor_PreservesPreviousDetails()
+    {
+        CalendarEvent calendarEvent = CreateEvent();
+        calendarEvent.UpdateDetails("Original message", "#425EBA");
+
+        Assert.Throws<ArgumentException>(() => calendarEvent.UpdateDetails("Changed message", "blue"));
+
+        Assert.Equal("Original message", calendarEvent.Description);
+        Assert.Equal("#425EBA", calendarEvent.ColorHex);
+    }
+
+    [Fact]
     public void AddReminder_DuplicateRule_Throws()
     {
         CalendarEvent calendarEvent = CreateEvent();
@@ -169,6 +192,48 @@ public sealed class CalendarEventTests
             "UTC"));
 
         Assert.Equal(originalStart, calendarEvent.StartsAtUtc);
+    }
+
+    [Fact]
+    public void YearlyFebruary29_SkipsNonLeapYears_AndUsesThreeNotificationTimes()
+    {
+        CalendarEvent calendarEvent = CalendarEvent.Create(
+            Guid.NewGuid(), "Birthday", new DateTimeOffset(2028, 2, 29, 11, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2028, 2, 29, 17, 0, 0, TimeSpan.Zero), "UTC",
+            recurrenceKind: EventRecurrenceKind.Yearly, recurrenceMonth: 2, recurrenceDay: 29,
+            notificationIntervalMinutes: 180);
+
+        Assert.Empty(calendarEvent.GetRecurringNotificationTimes(new DateOnly(2027, 2, 28)));
+        Assert.False(calendarEvent.OccursOn(new DateOnly(2027, 3, 1)));
+        Assert.Equal(new[] { 11, 14, 17 },
+            calendarEvent.GetRecurringNotificationTimes(new DateOnly(2032, 2, 29))
+                .Select(time => time.Hour));
+        calendarEvent.Disable();
+        Assert.Empty(calendarEvent.GetRecurringNotificationTimes(new DateOnly(2032, 2, 29)));
+    }
+
+    [Fact]
+    public void MonthlyThirtyFirst_SkipsShortMonths()
+    {
+        CalendarEvent calendarEvent = CalendarEvent.Create(
+            Guid.NewGuid(), "Monthly", new DateTimeOffset(2026, 1, 31, 11, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2026, 1, 31, 17, 0, 0, TimeSpan.Zero), "UTC",
+            recurrenceKind: EventRecurrenceKind.Monthly, recurrenceDay: 31,
+            notificationIntervalMinutes: 180);
+
+        Assert.False(calendarEvent.OccursOn(new DateOnly(2026, 2, 28)));
+        Assert.Empty(calendarEvent.GetRecurringNotificationTimes(new DateOnly(2026, 2, 28)));
+        Assert.Equal(3, calendarEvent.GetRecurringNotificationTimes(new DateOnly(2026, 3, 31)).Count);
+    }
+
+    [Fact]
+    public void RecurringNotificationWindow_MustAlignWithInterval()
+    {
+        Assert.Throws<ArgumentException>(() => CalendarEvent.Create(
+            Guid.NewGuid(), "Birthday", new DateTimeOffset(2028, 2, 29, 11, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2028, 2, 29, 17, 0, 0, TimeSpan.Zero), "UTC",
+            recurrenceKind: EventRecurrenceKind.Yearly, recurrenceMonth: 2, recurrenceDay: 29,
+            notificationIntervalMinutes: 240));
     }
 
     private static CalendarEvent CreateEvent() => CalendarEvent.Create(

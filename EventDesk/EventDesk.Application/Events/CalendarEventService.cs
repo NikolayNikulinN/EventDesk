@@ -12,7 +12,9 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
     {
         ArgumentNullException.ThrowIfNull(model);
         CalendarEvent calendarEvent = CalendarEvent.Create(
-        Guid.NewGuid(), model.Title, model.StartsAt, model.EndsAt, model.TimeZoneId);
+            Guid.NewGuid(), model.Title, model.StartsAt, model.EndsAt, model.TimeZoneId,
+            model.Description, model.ColorHex, model.Recurrence, model.RecurrenceMonth,
+            model.RecurrenceDay, model.NotificationIntervalMinutes);
 
         ApplyReminders(calendarEvent, model.Reminders);
         if (!model.IsEnabled)
@@ -36,7 +38,9 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
         }
 
         calendarEvent.UpdateTitle(model.Title);
-        calendarEvent.Reschedule(model.StartsAt, model.EndsAt, model.TimeZoneId);
+        calendarEvent.UpdateDetails(model.Description, model.ColorHex);
+        calendarEvent.UpdateScheduleAndRecurrence(model.StartsAt, model.EndsAt, model.TimeZoneId,
+            model.Recurrence, model.RecurrenceMonth, model.RecurrenceDay, model.NotificationIntervalMinutes);
         ApplyReminders(calendarEvent, model.Reminders);
         if (model.IsEnabled)
         {
@@ -71,7 +75,36 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
 
         IReadOnlyList<CalendarEvent> events = await repository.GetOverlappingAsync(
             from.ToUniversalTime(), to.ToUniversalTime(), cancellationToken);
-        return events.Select(ToModel).ToArray();
+        IReadOnlyList<CalendarEvent> recurring = await repository.GetRecurringAsync(cancellationToken);
+        List<CalendarEventModel> result = events.Select(ToModel).ToList();
+        foreach (CalendarEvent calendarEvent in recurring)
+        {
+            TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById(calendarEvent.TimeZoneId);
+            DateOnly date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(from, zone).Date);
+            DateOnly lastDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(to, zone).Date);
+            while (date <= lastDate)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                IReadOnlyList<DateTimeOffset> notificationTimes = calendarEvent.GetRecurringOccurrenceTimes(date);
+                if (notificationTimes.Count != 0 && notificationTimes[0] < to && notificationTimes[^1] >= from)
+                {
+                    result.Add(ToModel(calendarEvent) with
+                    {
+                        StartsAtUtc = notificationTimes[0],
+                        EndsAtUtc = notificationTimes[^1]
+                    });
+                }
+
+                if (date == lastDate)
+                {
+                    break;
+                }
+
+                date = date.AddDays(1);
+            }
+        }
+
+        return result.OrderBy(item => item.StartsAtUtc).ThenBy(item => item.Id).ToArray();
     }
 
     private async Task<CalendarEvent> GetRequiredAsync(Guid id, CancellationToken cancellationToken)
@@ -103,5 +136,11 @@ public sealed class CalendarEventService(ICalendarEventRepository repository, IU
         calendarEvent.EndsAtUtc,
         calendarEvent.TimeZoneId,
         calendarEvent.IsEnabled,
-        calendarEvent.Reminders.Select(reminder => new ReminderRuleModel(reminder.LeadTime, reminder.Channel, reminder.OccurrenceCount, reminder.RepeatInterval)).ToArray());
+        calendarEvent.Reminders.Select(reminder => new ReminderRuleModel(reminder.LeadTime, reminder.Channel, reminder.OccurrenceCount, reminder.RepeatInterval)).ToArray(),
+        calendarEvent.Description,
+        calendarEvent.ColorHex,
+        calendarEvent.RecurrenceKind,
+        calendarEvent.RecurrenceMonth,
+        calendarEvent.RecurrenceDay,
+        calendarEvent.NotificationIntervalMinutes);
 }

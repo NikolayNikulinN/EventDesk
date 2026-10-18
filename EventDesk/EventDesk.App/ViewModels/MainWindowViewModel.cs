@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using EventDesk.App.Views.Pages;
 using EventDesk.Resources.Abstract;
+using EventDesk.Resources.Icons;
 using Wpf.Ui.Controls;
 
 namespace EventDesk.App.ViewModels;
@@ -21,11 +22,15 @@ public sealed class MainWindowViewModel : ObservableObject
             new NavigationViewItem
             {
                 Content = resourceWrapper.Calendar,
+                Icon = NavigationIcons.FromImage(resourceWrapper.MenuCalendarIconPath),
+                ToolTip = resourceWrapper.Calendar,
                 TargetPageType = typeof(CalendarPage)
             },
             new NavigationViewItem
             {
                 Content = resourceWrapper.History,
+                Icon = NavigationIcons.FromImage(resourceWrapper.MenuHistoryIconPath),
+                ToolTip = resourceWrapper.History,
                 TargetPageType = typeof(HistoryPage)
             }
         ];
@@ -34,11 +39,15 @@ public sealed class MainWindowViewModel : ObservableObject
             new NavigationViewItem
             {
                 Content = resourceWrapper.Settings,
+                Icon = NavigationIcons.FromImage(resourceWrapper.MenuSettingsIconPath),
+                ToolTip = resourceWrapper.Settings,
                 TargetPageType = typeof(SettingsPage)
             },
             new NavigationViewItem
             {
                 Content = resourceWrapper.About,
+                Icon = NavigationIcons.FromImage(resourceWrapper.MenuAboutIconPath),
+                ToolTip = resourceWrapper.About,
                 TargetPageType = typeof(AboutPage)
             }
         ];

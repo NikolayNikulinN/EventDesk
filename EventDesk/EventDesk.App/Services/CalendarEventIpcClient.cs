@@ -17,4 +17,16 @@ public sealed class CalendarEventIpcClient(IIpcClient ipcClient) : ICalendarEven
             cancellationToken);
         return response.Events;
     }
+
+    public Task<CalendarEventResponse> CreateAsync(SaveEventDto calendarEvent, CancellationToken cancellationToken = default) =>
+        ipcClient.SendAsync<CreateEventRequest, CalendarEventResponse>(
+            IpcOperation.CreateEvent, new CreateEventRequest(calendarEvent), cancellationToken);
+
+    public Task<CalendarEventResponse> UpdateAsync(Guid id, SaveEventDto calendarEvent, CancellationToken cancellationToken = default) =>
+        ipcClient.SendAsync<UpdateEventRequest, CalendarEventResponse>(
+            IpcOperation.UpdateEvent, new UpdateEventRequest(id, calendarEvent), cancellationToken);
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
+        await ipcClient.SendAsync<DeleteEventRequest, DeleteEventResponse>(
+            IpcOperation.DeleteEvent, new DeleteEventRequest(id), cancellationToken);
 }

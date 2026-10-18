@@ -1,6 +1,10 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Thickness x:Key="ShellPadding">24</Thickness>
-  <Thickness x:Key="CalendarStatusMargin">0,12,0,12</Thickness>
-  <Thickness x:Key="CalendarEventTitleMargin">12,0,0,0</Thickness>
+  <Thickness x:Key="CalendarStatusMargin">0,0,0,8</Thickness>
+  <Thickness x:Key="CalendarPagePadding">20</Thickness>
+  <Thickness x:Key="CalendarToolbarMargin">0,0,0,15</Thickness>
+  <Thickness x:Key="CalendarEditorHeadingMargin">0,0,0,18</Thickness>
+  <Thickness x:Key="CalendarEditorFieldMargin">0,12,0,0</Thickness>
+  <Thickness x:Key="CalendarEditorScrollContentMargin">0,0,24,0</Thickness>
 </ResourceDictionary>

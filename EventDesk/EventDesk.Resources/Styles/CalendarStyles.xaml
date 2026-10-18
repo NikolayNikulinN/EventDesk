@@ -1,0 +1,451 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <ResourceDictionary.MergedDictionaries>
+    <!-- BasedOn styles need WPF-UI keys available while this dictionary is parsed. -->
+    <ui:ControlsDictionary />
+  </ResourceDictionary.MergedDictionaries>
+
+  <Style x:Key="CalendarSidePanelStyle" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="8" />
+    <Setter Property="Margin" Value="0,0,12,0" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
+
+  <Style x:Key="CalendarWeekPanelStyle" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+  </Style>
+
+  <Style x:Key="CalendarEditorPanelStyle" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="Effect">
+      <Setter.Value>
+        <DropShadowEffect Color="{DynamicResource PrimaryTextColor}"
+                          BlurRadius="20"
+                          ShadowDepth="5"
+                          Opacity="0.2" />
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorDialogWindowStyle" TargetType="Window">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="WindowStyle" Value="None" />
+    <Setter Property="AllowsTransparency" Value="True" />
+    <Setter Property="ResizeMode" Value="NoResize" />
+    <Setter Property="ShowInTaskbar" Value="False" />
+  </Style>
+
+  <Style x:Key="CalendarEditorBackdropButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border Background="{TemplateBinding Background}"
+                  CornerRadius="{DynamicResource WindowCornerRadius}" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarWeekRangeStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="Margin" Value="0,4,0,0" />
+  </Style>
+
+  <Style x:Key="CalendarHourLabelStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Padding" Value="8,4,0,0" />
+  </Style>
+
+  <Style x:Key="CalendarEditorHeadingStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="CalendarFieldLabelStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Margin" Value="0,12,0,4" />
+  </Style>
+
+  <Style x:Key="CalendarEditorTextBoxStyle" TargetType="TextBox"
+         BasedOn="{StaticResource DefaultTextBoxStyle}">
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="CalendarEditorDescriptionTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource CalendarEditorTextBoxStyle}">
+    <Setter Property="Height" Value="78" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+  </Style>
+
+  <Style x:Key="CalendarEditorDatePickerStyle" TargetType="ui:CalendarDatePicker"
+         BasedOn="{StaticResource DefaultUiCalendarDatePickerStyle}">
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="IsTodayHighlighted" Value="True" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarToolbarBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+      </Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True">
+        <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="CalendarEditorComboBoxStyle" TargetType="ComboBox"
+         BasedOn="{StaticResource DefaultComboBoxStyle}">
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="CalendarEditorSliderTrackButtonStyle" TargetType="RepeatButton">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Height="4"
+                  VerticalAlignment="Center"
+                  CornerRadius="2"
+                  Background="{TemplateBinding Background}" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorSliderThumbStyle" TargetType="Thumb">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="SliderThumb"
+                  Width="20"
+                  Height="20"
+                  CornerRadius="10"
+                  Background="{DynamicResource CalendarAccentBrush}"
+                  BorderBrush="{DynamicResource CalendarAccentBrush}"
+                  BorderThickness="2" />
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="SliderThumb" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+              <Setter TargetName="SliderThumb" Property="Background" Value="{DynamicResource MiniCalendarTodayBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorTimeSliderStyle" TargetType="Slider">
+    <Setter Property="Minimum" Value="0" />
+    <Setter Property="Maximum" Value="1439" />
+    <Setter Property="TickFrequency" Value="1" />
+    <Setter Property="IsSnapToTickEnabled" Value="True" />
+    <Setter Property="SmallChange" Value="1" />
+    <Setter Property="LargeChange" Value="15" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Margin" Value="0,0,10,0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Slider">
+          <Grid Height="34" Background="Transparent">
+            <Track x:Name="PART_Track"
+                   VerticalAlignment="Center"
+                   Height="20"
+                   IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+              <Track.DecreaseRepeatButton>
+                <RepeatButton Style="{StaticResource CalendarEditorSliderTrackButtonStyle}"
+                              Background="{DynamicResource CalendarAccentBrush}"
+                              Command="Slider.DecreaseLarge" />
+              </Track.DecreaseRepeatButton>
+              <Track.Thumb>
+                <Thumb Style="{StaticResource CalendarEditorSliderThumbStyle}" />
+              </Track.Thumb>
+              <Track.IncreaseRepeatButton>
+                <RepeatButton Style="{StaticResource CalendarEditorSliderTrackButtonStyle}"
+                              Background="{DynamicResource CalendarToolbarBorderBrush}"
+                              Command="Slider.IncreaseLarge" />
+              </Track.IncreaseRepeatButton>
+            </Track>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorTimeValueStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="TextAlignment" Value="Right" />
+  </Style>
+
+  <Style x:Key="CalendarEditorCancelIconStyle" TargetType="Image">
+    <Setter Property="Width" Value="30" />
+    <Setter Property="Height" Value="30" />
+    <Setter Property="Stretch" Value="Uniform" />
+  </Style>
+
+  <Style x:Key="CalendarEditorCheckBoxStyle" TargetType="CheckBox">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Border Background="Transparent">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <Border x:Name="CheckBoxIndicator"
+                      Width="18"
+                      Height="18"
+                      CornerRadius="4"
+                      Background="{DynamicResource CalendarSurfaceBrush}"
+                      BorderBrush="{DynamicResource CalendarToolbarBorderBrush}"
+                      BorderThickness="1">
+                <Path x:Name="CheckBoxGlyph"
+                      Width="12"
+                      Height="12"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Stretch="None"
+                      Data="M 1,6 L 4.5,9 L 11,2.5"
+                      Stroke="White"
+                      StrokeThickness="1.75"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Visibility="Collapsed" />
+              </Border>
+              <ContentPresenter ContentSource="Content"
+                                RecognizesAccessKey="True"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0" />
+            </StackPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="CheckBoxIndicator" Property="Background" Value="{DynamicResource CalendarAccentBrush}" />
+              <Setter TargetName="CheckBoxIndicator" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+              <Setter TargetName="CheckBoxGlyph" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="CheckBoxIndicator" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+              <Setter TargetName="CheckBoxIndicator" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsChecked" Value="True" />
+                <Condition Property="IsMouseOver" Value="True" />
+              </MultiTrigger.Conditions>
+              <Setter TargetName="CheckBoxGlyph" Property="Stroke" Value="{DynamicResource CalendarAccentBrush}" />
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="MiniCalendarDayButtonStyle" TargetType="CalendarDayButton">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CalendarDayButton">
+          <Border x:Name="DayCircle"
+                  Width="30"
+                  Height="30"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  CornerRadius="15">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="DayCircle" Property="Background" Value="{DynamicResource CalendarDisabledEventBrush}" />
+            </Trigger>
+            <Trigger Property="IsInactive" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+            </Trigger>
+            <Trigger Property="IsBlackedOut" Value="True">
+              <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="DayCircle" Property="Background" Value="{DynamicResource MiniCalendarSelectedDayBrush}" />
+            </Trigger>
+            <Trigger Property="IsToday" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource CalendarAccentBrush}" />
+              <Setter TargetName="DayCircle" Property="Background" Value="{DynamicResource MiniCalendarTodayBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="MiniCalendarMonthButtonStyle" TargetType="CalendarButton">
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <Style x:Key="CalendarToolbarButtonStyle" TargetType="Button">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="10,4" />
+    <Setter Property="Margin" Value="0,0,6,0" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+
+  <Style x:Key="CalendarToolbarIconButtonStyle" TargetType="Button" BasedOn="{StaticResource CalendarToolbarButtonStyle}">
+    <Setter Property="Width" Value="48" />
+    <Setter Property="Height" Value="48" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarToolbarBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="ButtonBorder"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{DynamicResource CalendarToolbarButtonCornerRadius}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+              <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource MiniCalendarTodayBrush}" />
+              <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource CalendarAccentHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarToolbarPrimaryIconButtonStyle" TargetType="Button" BasedOn="{StaticResource CalendarToolbarIconButtonStyle}">
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+  </Style>
+
+  <Style x:Key="CalendarToolbarIconImageStyle" TargetType="Image">
+    <Setter Property="Width" Value="42" />
+    <Setter Property="Height" Value="42" />
+    <Setter Property="Stretch" Value="Uniform" />
+  </Style>
+
+  <Style x:Key="CalendarEditorCancelButtonStyle" TargetType="Button" BasedOn="{StaticResource CalendarToolbarIconButtonStyle}">
+    <Setter Property="Width" Value="38" />
+    <Setter Property="Height" Value="38" />
+    <Setter Property="Margin" Value="0" />
+  </Style>
+
+  <Style x:Key="CalendarPrimaryButtonStyle" TargetType="Button">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="12,4" />
+    <Setter Property="Background" Value="{DynamicResource CalendarAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Opacity" Value="0.45" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="CalendarDeleteButtonStyle" TargetType="Button">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Padding" Value="10,4" />
+    <Setter Property="Margin" Value="0,16,6,0" />
+    <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+  </Style>
+
+  <Style x:Key="CalendarDayHeaderStyle" TargetType="Button">
+    <Setter Property="Height" Value="54" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarGridLineBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsToday}" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource CalendarAccentBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="CalendarEventCardStyle" TargetType="Button">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+    <Setter Property="BorderThickness" Value="3,0,0,0" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Padding" Value="6,3" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+        <Setter Property="Background" Value="{DynamicResource CalendarDisabledEventBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource MutedTextBrush}" />
+        <Setter Property="Opacity" Value="0.7" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+</ResourceDictionary>

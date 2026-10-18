@@ -9,7 +9,16 @@
 - A local time skipped by the spring transition is rejected: neither offset identifies that wall time in the zone.
 - A local time repeated by the autumn transition is accepted with either valid offset. The chosen offset identifies which occurrence the user meant. A caller must supply that offset explicitly; the domain never guesses.
 - Rescheduling supplies both endpoints and a zone again. Validation completes before the stored schedule changes.
-- If system time zone rules change later, the stored UTC instants remain fixed. The retained zone ID is used with the current system rules when displaying local time. A future recurring-event model will need its own rule for resolving future wall times.
+- If system time zone rules change later, the stored UTC instants remain fixed. The retained zone ID is used with the current system rules when displaying local time.
+
+## Calendar recurrence
+
+- `None` is a single event. `Yearly` stores a month and day, without a meaningful year. `Monthly` stores only a day of month. The UTC start and end of a recurring event serve as anchors for its local notification times and time zone; their date is not a recurrence cutoff.
+- A missing date is skipped. February 29 occurs only in leap years; day 31 is skipped in months with fewer than 31 days. No occurrence is shifted to another day.
+- A recurring event has a first and last notification time on the same local date and a positive interval. The last time must align with the interval, so 11:00–17:00 with a three-hour interval produces 11:00, 14:00, and 17:00.
+- Future local times are resolved using the stored time zone and current system rules. A time missing during a daylight-saving transition is skipped. An ambiguous time uses the earlier occurrence (the larger UTC offset).
+- Calendar period queries expand a recurring event into dated occurrences. Each occurrence retains the series ID so editing or deleting an occurrence changes the whole series. Disabling a series suppresses its notification times but leaves it visible in the calendar.
+- Notification delivery and delivery history are separate work; the recurrence model calculates due times but the service does not yet deliver them.
 
 ## Reminder times
 

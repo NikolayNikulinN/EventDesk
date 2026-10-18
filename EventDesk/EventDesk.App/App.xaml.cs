@@ -11,6 +11,7 @@ using EventDesk.Logger.Wrappers;
 using EventDesk.Ipc.Abstractions;
 using EventDesk.Ipc.Client;
 using EventDesk.Resources.Abstract;
+using EventDesk.Resources.Behaviors;
 using EventDesk.Resources.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        InteractiveCursorBehavior.Register();
 
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(e.Args);
         builder.Services.AddSingleton<IResourceWrapper, ResourceWrapper>();

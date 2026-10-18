@@ -6,4 +6,17 @@
   <SolidColorBrush x:Key="TitleBarHoverBrush" Color="{DynamicResource TitleBarHoverColor}" />
   <SolidColorBrush x:Key="TitleBarPressedBrush" Color="{DynamicResource TitleBarPressedColor}" />
   <SolidColorBrush x:Key="WindowBorderBrush" Color="{DynamicResource WindowBorderColor}" />
+  <SolidColorBrush x:Key="CalendarToolbarBorderBrush" Color="{DynamicResource CalendarToolbarBorderColor}" />
+  <SolidColorBrush x:Key="CalendarSurfaceBrush" Color="{DynamicResource CalendarSurfaceColor}" />
+  <SolidColorBrush x:Key="CalendarEditorBackdropBrush" Color="{DynamicResource CalendarEditorBackdropColor}" />
+  <SolidColorBrush x:Key="CalendarAccentBrush" Color="{DynamicResource CalendarAccentColor}" />
+  <SolidColorBrush x:Key="CalendarAccentHoverBrush" Color="{DynamicResource CalendarAccentHoverColor}" />
+  <SolidColorBrush x:Key="MutedTextBrush" Color="{DynamicResource CalendarMutedTextColor}" />
+  <SolidColorBrush x:Key="CalendarGridLineBrush" Color="{DynamicResource CalendarGridLineColor}" />
+  <SolidColorBrush x:Key="CalendarEventBrush" Color="{DynamicResource CalendarEventColor}" />
+  <SolidColorBrush x:Key="MiniCalendarSelectedDayBrush" Color="{DynamicResource MiniCalendarSelectedDayColor}" />
+  <SolidColorBrush x:Key="MiniCalendarTodayBrush" Color="{DynamicResource MiniCalendarTodayColor}" />
+  <SolidColorBrush x:Key="CalendarDisabledEventBrush" Color="{DynamicResource CalendarDisabledEventColor}" />
+  <SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource CalendarErrorColor}" />
+  <SolidColorBrush x:Key="WarningBrush" Color="{DynamicResource CalendarWarningColor}" />
 </ResourceDictionary>

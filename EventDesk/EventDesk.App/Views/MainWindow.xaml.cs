@@ -15,6 +15,12 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = viewModel;
 
+        Rect workArea = SystemParameters.WorkArea;
+        MinWidth = Math.Min(MinWidth, workArea.Width);
+        MinHeight = Math.Min(MinHeight, workArea.Height);
+        Width = Math.Min(Width, workArea.Width);
+        Height = Math.Min(Height, workArea.Height);
+
         navigationService.SetNavigationControl(RootNavigationView);
         viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
     }
