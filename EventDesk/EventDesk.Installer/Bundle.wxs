@@ -1,0 +1,36 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle Name="EventDesk"
+          Manufacturer="dLiX Software"
+          Version="0.1.0"
+          UpgradeCode="28E89F4C-1A91-4672-A48C-40B704ED5693"
+          IconSourceFile="..\EventDesk.Resources\Icons\appTrayIcon.ico">
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication
+          Theme="hyperlinkLicense"
+          ThemeFile="..\EventDesk.Resources\Theme\InstallerTheme.xml"
+          LocalizationFile="obj\InstallerTheme.en-us.wxl"
+          LogoFile="..\EventDesk.Resources\Images\appIcon.png"
+          LicenseUrl=""
+          SuppressOptionsUI="yes"
+          SuppressRepair="yes" />
+      <Payload Name="installerBackground.png"
+               SourceFile="..\EventDesk.Resources\Images\installerBackground.png" />
+      <Payload Name="installerButtonNormal.png"
+               SourceFile="..\EventDesk.Resources\Images\installerButtonNormal.png" />
+      <Payload Name="installerButtonHover.png"
+               SourceFile="..\EventDesk.Resources\Images\installerButtonHover.png" />
+      <Payload Name="installerButtonPressed.png"
+               SourceFile="..\EventDesk.Resources\Images\installerButtonPressed.png" />
+      <Payload Name="appTrayIcon.ico"
+               SourceFile="..\EventDesk.Resources\Icons\appTrayIcon.ico" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage Id="EventDeskMsi"
+                  SourceFile="$(var.EventDesk.Installer.Package.TargetPath)"
+                  Compressed="yes"
+                  Vital="yes" />
+    </Chain>
+  </Bundle>
+</Wix>

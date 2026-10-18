@@ -1,5 +1,8 @@
 using EventDesk.Application.Abstractions.Persistence;
 using EventDesk.Application.Reminders;
+using EventDesk.Application.Email;
+using EventDesk.Constants;
+using EventDesk.Infrastructure.Email;
 using EventDesk.Infrastructure.Persistence;
 using EventDesk.Infrastructure.Persistence.Repositories;
 using EventDesk.Infrastructure.Notifications;
@@ -30,6 +33,9 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IReminderStore, ReminderStore>();
         services.AddSingleton<IDesktopReminderClient, NamedPipeDesktopReminderClient>();
+        services.AddSingleton<IEmailSettingsStore>(new ProtectedEmailSettingsStore(
+            Path.Combine(Path.GetDirectoryName(databasePath)!, EmailConstants.SettingsFileName)));
+        services.AddSingleton<IEmailSender, MailKitEmailSender>();
         services.AddSingleton<IReminderDispatcher, ReminderDispatcher>();
         return services;
     }

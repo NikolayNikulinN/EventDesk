@@ -23,6 +23,7 @@ public sealed class CalendarViewModel : ObservableObject
     private readonly ILoggerWrapper logger;
     private DateTime? selectedDate = DateTime.Today;
     private string weekRange = string.Empty;
+    private bool isMiniCalendarExpanded = true;
     private string status = string.Empty;
     private string errorMessage = string.Empty;
     private string editorError = string.Empty;
@@ -42,6 +43,7 @@ public sealed class CalendarViewModel : ObservableObject
     private bool isSaving;
     private bool isDeleteConfirmationVisible;
     private ReminderOption? selectedReminder;
+    private ReminderOption? selectedEmailReminder;
     private EventRecurrenceOption? selectedRecurrence;
     private NotificationIntervalOption? selectedNotificationInterval;
     private int selectedMonthOfYear;
@@ -49,6 +51,7 @@ public sealed class CalendarViewModel : ObservableObject
     private CalendarColorOption? selectedColor;
     private CalendarEventResponse? editedEvent;
     private bool reminderChanged;
+    private bool emailReminderChanged;
     private OverlapSchedule? pendingOverlapSchedule;
     private int loadVersion;
 
@@ -69,6 +72,7 @@ public sealed class CalendarViewModel : ObservableObject
             new ReminderOption(60, resources.ReminderOneHour)
         ];
         selectedReminder = ReminderOptions[0];
+        selectedEmailReminder = ReminderOptions[0];
         RecurrenceOptions =
         [
             new EventRecurrenceOption(EventRecurrenceCode.None, resources.EventRepeatOnce),
@@ -171,6 +175,22 @@ public sealed class CalendarViewModel : ObservableObject
         get => weekRange;
         private set => SetProperty(ref weekRange, value);
     }
+
+    public bool IsMiniCalendarExpanded
+    {
+        get => isMiniCalendarExpanded;
+        set
+        {
+            if (SetProperty(ref isMiniCalendarExpanded, value))
+            {
+                OnPropertyChanged(nameof(MiniCalendarToggleLabel));
+            }
+        }
+    }
+
+    public string MiniCalendarToggleLabel => IsMiniCalendarExpanded
+        ? Resources.CollapseMiniCalendar
+        : Resources.ExpandMiniCalendar;
 
     public string Status
     {
@@ -409,6 +429,19 @@ public sealed class CalendarViewModel : ObservableObject
         }
     }
 
+    public ReminderOption? SelectedEmailReminder
+    {
+        get => selectedEmailReminder;
+        set
+        {
+            if (SetProperty(ref selectedEmailReminder, value))
+            {
+                emailReminderChanged = true;
+                SaveEventCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
     public EventRecurrenceOption? SelectedRecurrence
     {
         get => selectedRecurrence;
@@ -610,12 +643,14 @@ public sealed class CalendarViewModel : ObservableObject
         EndTime = DateTime.Today.AddHours(10).ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture);
         IsEnabled = true;
         SelectedReminder = ReminderOptions[0];
+        SelectedEmailReminder = ReminderOptions[0];
         SelectedRecurrence = RecurrenceOptions[0];
         SelectedNotificationInterval = NotificationIntervalOptions[3];
         SelectedMonthOfYear = StartDate.Value.Month;
         SelectedDayOfMonth = StartDate.Value.Day;
         SelectedColor = ColorOptions[0];
         reminderChanged = false;
+        emailReminderChanged = false;
         EditorHeading = Resources.NewEvent;
         EditorError = string.Empty;
         ClearOverlapWarning();
@@ -644,6 +679,9 @@ public sealed class CalendarViewModel : ObservableObject
         ReminderRuleDto? simpleReminder = item.Source.Reminders.FirstOrDefault(IsSimpleDesktopReminder);
         SelectedReminder = ReminderOptions.FirstOrDefault(option =>
             option.Minutes == (int)(simpleReminder?.LeadTime.TotalMinutes ?? 0)) ?? ReminderOptions[0];
+        ReminderRuleDto? simpleEmailReminder = item.Source.Reminders.FirstOrDefault(IsSimpleEmailReminder);
+        SelectedEmailReminder = ReminderOptions.FirstOrDefault(option =>
+            option.Minutes == (int)(simpleEmailReminder?.LeadTime.TotalMinutes ?? 0)) ?? ReminderOptions[0];
         SelectedRecurrence = RecurrenceOptions.First(option => option.Code == item.Source.Recurrence);
         SelectedNotificationInterval = NotificationIntervalOptions.FirstOrDefault(option =>
             option.Minutes == item.Source.NotificationIntervalMinutes) ?? NotificationIntervalOptions[3];
@@ -652,6 +690,7 @@ public sealed class CalendarViewModel : ObservableObject
         SelectedColor = ColorOptions.FirstOrDefault(option =>
             string.Equals(option.ColorHex, item.Source.ColorHex, StringComparison.OrdinalIgnoreCase)) ?? ColorOptions[0];
         reminderChanged = false;
+        emailReminderChanged = false;
         EditorHeading = Resources.EditEvent;
         EditorError = string.Empty;
         ClearOverlapWarning();
@@ -745,6 +784,7 @@ public sealed class CalendarViewModel : ObservableObject
                   SelectedDayOfMonth <= DateTime.DaysInMonth(2024, SelectedMonthOfYear)) &&
               TryGetRecurringWindow(out _, out _, out _)
             : StartDate is not null && EndDate is not null && SelectedReminder is not null &&
+              SelectedEmailReminder is not null &&
               TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out _) &&
               TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out _);
     }
@@ -796,7 +836,7 @@ public sealed class CalendarViewModel : ObservableObject
 
         if (EventTitle.Length > 500 || EventDescription.Length > 2000 ||
             SelectedColor is null || SelectedRecurrence is null ||
-            (!IsRecurringEvent && SelectedReminder is null))
+            (!IsRecurringEvent && (SelectedReminder is null || SelectedEmailReminder is null)))
         {
             EditorError = Resources.InvalidEventData;
             return false;
@@ -860,11 +900,18 @@ public sealed class CalendarViewModel : ObservableObject
         }
 
         List<ReminderRuleDto> reminders = IsRecurringEvent ? [] :
-            editedEvent?.Reminders.Where(rule => !reminderChanged || !IsSimpleDesktopReminder(rule)).ToList() ?? [];
+            editedEvent?.Reminders.Where(rule =>
+                (!reminderChanged || !IsSimpleDesktopReminder(rule)) &&
+                (!emailReminderChanged || !IsSimpleEmailReminder(rule))).ToList() ?? [];
         if (!IsRecurringEvent && (editedEvent is null || reminderChanged) &&
             SelectedReminder is { Minutes: > 0 } reminder)
         {
             reminders.Add(new ReminderRuleDto(TimeSpan.FromMinutes(reminder.Minutes), ReminderChannelCode.Desktop, 1, null));
+        }
+        if (!IsRecurringEvent && (editedEvent is null || emailReminderChanged) &&
+            SelectedEmailReminder is { Minutes: > 0 } emailReminder)
+        {
+            reminders.Add(new ReminderRuleDto(TimeSpan.FromMinutes(emailReminder.Minutes), ReminderChannelCode.Email, 1, null));
         }
 
         model = new SaveEventDto(EventTitle.Trim(), ToLocalOffset(localStart), ToLocalOffset(localEnd),
@@ -876,6 +923,9 @@ public sealed class CalendarViewModel : ObservableObject
 
     private static bool IsSimpleDesktopReminder(ReminderRuleDto rule) =>
         rule.Channel == ReminderChannelCode.Desktop && rule.OccurrenceCount == 1 && rule.RepeatInterval is null;
+
+    private static bool IsSimpleEmailReminder(ReminderRuleDto rule) =>
+        rule.Channel == ReminderChannelCode.Email && rule.OccurrenceCount == 1 && rule.RepeatInterval is null;
 
     private static DateTime GetMonthlyAnchor(int day, TimeOnly first, TimeOnly last)
     {

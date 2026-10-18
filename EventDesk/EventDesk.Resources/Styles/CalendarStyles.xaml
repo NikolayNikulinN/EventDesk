@@ -6,29 +6,11 @@
     <ui:ControlsDictionary />
   </ResourceDictionary.MergedDictionaries>
 
-  <Style x:Key="CalendarSidePanelStyle" TargetType="Border">
+  <Style x:Key="CalendarPanelStyle" TargetType="Border">
     <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="12" />
-    <Setter Property="Padding" Value="8" />
-    <Setter Property="Margin" Value="0,0,12,0" />
-    <Setter Property="VerticalAlignment" Value="Top" />
-  </Style>
-
-  <Style x:Key="CalendarWeekPanelStyle" TargetType="Border">
-    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="12" />
-  </Style>
-
-  <Style x:Key="CalendarEditorPanelStyle" TargetType="Border">
-    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="12" />
-    <Setter Property="Padding" Value="16" />
     <Setter Property="Effect">
       <Setter.Value>
         <DropShadowEffect Color="{DynamicResource PrimaryTextColor}"
@@ -37,6 +19,21 @@
                           Opacity="0.2" />
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <Style x:Key="CalendarSidePanelStyle" TargetType="Border"
+         BasedOn="{StaticResource CalendarPanelStyle}">
+    <Setter Property="Padding" Value="8" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
+
+  <Style x:Key="CalendarWeekPanelStyle" TargetType="Border"
+         BasedOn="{StaticResource CalendarPanelStyle}">
+  </Style>
+
+  <Style x:Key="CalendarEditorPanelStyle" TargetType="Border"
+         BasedOn="{StaticResource CalendarPanelStyle}">
+    <Setter Property="Padding" Value="16" />
   </Style>
 
   <Style x:Key="CalendarEditorDialogWindowStyle" TargetType="Window">
@@ -329,6 +326,68 @@
 
   <Style x:Key="MiniCalendarMonthButtonStyle" TargetType="CalendarButton">
     <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <Style x:Key="CalendarMiniToggleButtonStyle" TargetType="ToggleButton">
+    <Setter Property="Width" Value="30" />
+    <Setter Property="Height" Value="44" />
+    <Setter Property="Margin" Value="0,10,12,0" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,1,1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Grid>
+            <Border x:Name="ToggleBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{DynamicResource MiniCalendarToggleCornerRadius}">
+              <Border.Effect>
+                <DropShadowEffect Color="{DynamicResource PrimaryTextColor}"
+                                  BlurRadius="12"
+                                  ShadowDepth="4"
+                                  Opacity="0.14" />
+              </Border.Effect>
+            </Border>
+            <Path x:Name="Chevron"
+                  Width="10" Height="16"
+                  Data="M 8,2 L 3,8 8,14"
+                  Stroke="{DynamicResource PrimaryTextBrush}"
+                  StrokeThickness="2"
+                  StrokeLineJoin="Round"
+                  Stretch="Uniform"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  RenderTransformOrigin="0.5,0.5" />
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="False">
+              <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1" />
+              <Setter TargetName="ToggleBorder" Property="CornerRadius" Value="{DynamicResource MiniCalendarToggleCollapsedCornerRadius}" />
+              <Setter TargetName="Chevron" Property="RenderTransform">
+                <Setter.Value>
+                  <ScaleTransform ScaleX="-1" />
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="ToggleBorder" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+              <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="ToggleBorder" Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Style x:Key="CalendarToolbarButtonStyle" TargetType="Button">

@@ -1,0 +1,194 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="CalendarStyles.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+  <Style x:Key="SettingsCardStyle" TargetType="Border"
+         BasedOn="{StaticResource CalendarEditorPanelStyle}">
+    <Setter Property="Padding" Value="24,20" />
+    <Setter Property="Margin" Value="0,16,0,0" />
+    <Setter Property="MinWidth" Value="730" />
+  </Style>
+  <Style x:Key="SettingsHeadingStyle" TargetType="TextBlock"
+         BasedOn="{StaticResource CalendarEditorHeadingStyle}">
+  </Style>
+  <Style x:Key="SettingsSectionHeadingStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style x:Key="SettingsHintStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Margin" Value="0,8,0,0" />
+  </Style>
+  <Style x:Key="SettingsFieldRowStyle" TargetType="DockPanel">
+    <Setter Property="Margin" Value="0,14,0,0" />
+    <Setter Property="LastChildFill" Value="True" />
+  </Style>
+  <Style x:Key="SettingsLabelStyle" TargetType="TextBlock"
+         BasedOn="{StaticResource CalendarFieldLabelStyle}">
+    <Setter Property="Width" Value="180" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="DockPanel.Dock" Value="Left" />
+  </Style>
+  <Style x:Key="SettingsDialogLabelStyle" TargetType="TextBlock"
+         BasedOn="{StaticResource CalendarFieldLabelStyle}">
+    <Setter Property="Margin" Value="0,16,0,4" />
+  </Style>
+  <Style x:Key="SettingsTextBoxStyle" TargetType="TextBox"
+         BasedOn="{StaticResource CalendarEditorTextBoxStyle}">
+    <Setter Property="MinWidth" Value="260" />
+  </Style>
+  <Style x:Key="SettingsPasswordBoxStyle" TargetType="PasswordBox">
+    <Setter Property="MinWidth" Value="260" />
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarToolbarBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource CalendarSurfaceBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="PasswordBox">
+          <Border x:Name="PasswordBorder"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="4">
+            <ScrollViewer x:Name="PART_ContentHost"
+                          Margin="{TemplateBinding Padding}"
+                          VerticalAlignment="Center"
+                          Focusable="False" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="PasswordBorder" Property="BorderBrush"
+                      Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="PasswordBorder" Property="BorderBrush"
+                      Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="PasswordBorder" Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="SettingsPasswordHintStyle" TargetType="TextBlock" BasedOn="{StaticResource SettingsHintStyle}">
+    <Setter Property="Margin" Value="180,6,0,0" />
+  </Style>
+  <Style x:Key="SettingsWatermarkStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="FontStyle" Value="Italic" />
+    <Setter Property="Margin" Value="10,0,0,0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+  </Style>
+  <Style x:Key="SettingsValidationMessageStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Margin" Value="180,4,0,0" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Style.Triggers>
+      <Trigger Property="Text" Value="">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsRecipientValidationMessageStyle" TargetType="TextBlock"
+         BasedOn="{StaticResource SettingsValidationMessageStyle}">
+    <Setter Property="Margin" Value="0,8,0,0" />
+  </Style>
+  <Style x:Key="SettingsCheckBoxStyle" TargetType="CheckBox"
+         BasedOn="{StaticResource CalendarEditorCheckBoxStyle}">
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Margin" Value="0,20,0,2" />
+  </Style>
+  <Style x:Key="SettingsInlineCheckBoxStyle" TargetType="CheckBox"
+         BasedOn="{StaticResource CalendarEditorCheckBoxStyle}">
+  </Style>
+  <Style x:Key="SettingsActionButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource CalendarPrimaryButtonStyle}">
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="Padding" Value="16,6" />
+  </Style>
+  <Style x:Key="SettingsSaveButtonStyle" TargetType="Button" BasedOn="{StaticResource SettingsActionButtonStyle}">
+    <Setter Property="Margin" Value="0,12,0,24" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+  </Style>
+  <Style x:Key="SettingsSecondaryButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource CalendarToolbarButtonStyle}">
+    <Setter Property="Margin" Value="0,0,8,0" />
+  </Style>
+  <Style x:Key="SettingsDangerButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource CalendarDeleteButtonStyle}">
+    <Setter Property="Margin" Value="0" />
+  </Style>
+  <Style x:Key="SettingsTextActionStyle" TargetType="Button"
+         BasedOn="{StaticResource CalendarToolbarButtonStyle}">
+    <Setter Property="Foreground" Value="{DynamicResource CalendarAccentBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Margin" Value="8,0,0,0" />
+  </Style>
+  <Style x:Key="SettingsRecipientRowStyle" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="12,7" />
+    <Setter Property="Margin" Value="0,10,0,0" />
+  </Style>
+  <Style x:Key="SettingsRecipientTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+  <Style x:Key="SettingsEmptyStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+    <Setter Property="Margin" Value="0,20,0,6" />
+  </Style>
+  <Style x:Key="SettingsEmptyWhenNoRecipientsStyle" TargetType="TextBlock" BasedOn="{StaticResource SettingsEmptyStyle}">
+    <Setter Property="Visibility" Value="Collapsed" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding RecipientAddresses.Count}" Value="0">
+        <Setter Property="Visibility" Value="Visible" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsStatusStyle" TargetType="TextBlock" BasedOn="{StaticResource SettingsHintStyle}">
+    <Setter Property="Margin" Value="0,12,0,0" />
+  </Style>
+  <Style x:Key="SettingsEditorOverlayStyle" TargetType="Grid">
+    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
+    <Setter Property="Visibility" Value="Collapsed" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsRecipientEditorOpen}" Value="True">
+        <Setter Property="Visibility" Value="Visible" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsDeleteOverlayStyle" TargetType="Grid">
+    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
+    <Setter Property="Visibility" Value="Collapsed" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsDeleteConfirmationOpen}" Value="True">
+        <Setter Property="Visibility" Value="Visible" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsDialogStyle" TargetType="Border"
+         BasedOn="{StaticResource CalendarEditorPanelStyle}">
+    <Setter Property="Padding" Value="24" />
+    <Setter Property="Width" Value="500" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+</ResourceDictionary>

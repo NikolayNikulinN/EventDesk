@@ -40,6 +40,7 @@ public partial class App : System.Windows.Application
         builder.Services.AddSingleton<IIpcClient>(new NamedPipeIpcClient(IpcConstants.PipeName));
         builder.Services.AddSingleton<ICalendarEventClient, CalendarEventIpcClient>();
         builder.Services.AddSingleton<IReminderHistoryClient, ReminderHistoryIpcClient>();
+        builder.Services.AddSingleton<IEmailSettingsClient, EmailSettingsIpcClient>();
         builder.Services.AddSingleton<IDesktopReminderServer, NamedPipeDesktopReminderServer>();
         builder.Services.AddSingleton<NotificationReceiptStore>();
         builder.Services.AddSingleton<TrayNotificationService>();

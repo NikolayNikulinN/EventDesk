@@ -2,6 +2,8 @@ namespace EventDesk.Resources.Controls.Calendar;
 
 public static class CalendarLayout
 {
+    public const double MiniCalendarWidth = 260;
+    public static readonly TimeSpan MiniCalendarTransitionDuration = TimeSpan.FromMilliseconds(240);
     public const double HourHeight = 48;
     public const double PixelsPerMinute = HourHeight / 60;
     public const double DayHeight = HourHeight * 24;

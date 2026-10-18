@@ -3,7 +3,163 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Style="{StaticResource ShellPageStyle}">
   <Grid Margin="{StaticResource ShellPadding}">
-    <TextBlock Style="{StaticResource ShellHeadingStyle}"
-               Text="{Binding Title}" />
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <TextBlock Style="{StaticResource ShellHeadingStyle}" Text="{Binding Title}" />
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel MaxWidth="780" HorizontalAlignment="Left">
+        <Border Style="{StaticResource SettingsCardStyle}">
+          <StackPanel>
+            <TextBlock Style="{StaticResource SettingsHeadingStyle}" Text="{Binding Resources.EmailSettingsHeading}" />
+            <TextBlock Style="{StaticResource SettingsHintStyle}" Text="{Binding Resources.EmailSettingsDescription}" TextWrapping="Wrap" />
+            <CheckBox Style="{StaticResource SettingsCheckBoxStyle}" Content="{Binding Resources.EmailEnabled}"
+                      IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+            <StackPanel IsEnabled="{Binding IsEnabled}">
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailHost}" />
+                <Grid>
+                  <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="253"
+                           Text="{Binding Host, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                  <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                             Text="{Binding Resources.EmailHostExample}"
+                             Visibility="{Binding IsHostWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+              </DockPanel>
+              <TextBlock Style="{StaticResource SettingsValidationMessageStyle}" Text="{Binding HostError}" />
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailPort}" />
+                <Grid>
+                  <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="5"
+                           Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                  <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                             Text="{Binding PortExample}"
+                             Visibility="{Binding IsPortWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+              </DockPanel>
+              <TextBlock Style="{StaticResource SettingsValidationMessageStyle}" Text="{Binding PortError}" />
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailSecurity}" />
+                <CheckBox Style="{StaticResource SettingsInlineCheckBoxStyle}" Content="{Binding Resources.EmailImplicitTls}"
+                          IsChecked="{Binding UseImplicitTls, Mode=TwoWay}" />
+              </DockPanel>
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailUserName}" />
+                <Grid>
+                  <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="320"
+                           Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                  <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                             Text="{Binding Resources.EmailUserNameExample}"
+                             Visibility="{Binding IsUserNameWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+              </DockPanel>
+              <TextBlock Style="{StaticResource SettingsValidationMessageStyle}" Text="{Binding UserNameError}" />
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailPassword}" />
+                <Grid>
+                  <PasswordBox x:Name="PasswordInput" Style="{StaticResource SettingsPasswordBoxStyle}"
+                               PasswordChanged="PasswordChanged" />
+                  <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                             Text="{Binding Resources.EmailPasswordExample}"
+                             Visibility="{Binding IsPasswordWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+              </DockPanel>
+              <TextBlock Style="{StaticResource SettingsValidationMessageStyle}" Text="{Binding PasswordError}" />
+              <TextBlock Style="{StaticResource SettingsPasswordHintStyle}" Text="{Binding PasswordHint}" TextWrapping="Wrap" />
+              <DockPanel Style="{StaticResource SettingsFieldRowStyle}">
+                <TextBlock Style="{StaticResource SettingsLabelStyle}" Text="{Binding Resources.EmailFromAddress}" />
+                <Grid>
+                  <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="320"
+                           Text="{Binding FromAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                  <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                             Text="{Binding Resources.EmailFromAddressExample}"
+                             Visibility="{Binding IsFromAddressWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+              </DockPanel>
+              <TextBlock Style="{StaticResource SettingsValidationMessageStyle}" Text="{Binding FromAddressError}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource SettingsCardStyle}" IsEnabled="{Binding IsEnabled}">
+          <StackPanel>
+            <DockPanel LastChildFill="False">
+              <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding Resources.EmailRecipientsHeading}"
+                         DockPanel.Dock="Left" />
+              <Button Style="{StaticResource SettingsActionButtonStyle}" DockPanel.Dock="Right"
+                      Content="{Binding Resources.AddRecipient}" Command="{Binding OpenAddRecipientCommand}"
+                      IsEnabled="{Binding CanAddRecipient}" />
+            </DockPanel>
+            <TextBlock Style="{StaticResource SettingsHintStyle}" Text="{Binding Resources.RecipientChangesHint}" TextWrapping="Wrap" />
+            <TextBlock Style="{StaticResource SettingsRecipientValidationMessageStyle}"
+                       Text="{Binding RecipientsError}" />
+            <TextBlock Style="{StaticResource SettingsEmptyWhenNoRecipientsStyle}"
+                       Text="{Binding Resources.RecipientsEmpty}" />
+            <ItemsControl ItemsSource="{Binding RecipientAddresses}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Style="{StaticResource SettingsRecipientRowStyle}">
+                    <DockPanel LastChildFill="True">
+                      <Button DockPanel.Dock="Right" Style="{StaticResource SettingsTextActionStyle}"
+                              Content="{Binding DataContext.Resources.DeleteRecipient, RelativeSource={RelativeSource AncestorType=Page}}"
+                              Command="{Binding DataContext.RequestDeleteRecipientCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                              CommandParameter="{Binding}" />
+                      <Button DockPanel.Dock="Right" Style="{StaticResource SettingsTextActionStyle}"
+                              Content="{Binding DataContext.Resources.EditRecipient, RelativeSource={RelativeSource AncestorType=Page}}"
+                              Command="{Binding DataContext.OpenEditRecipientCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                              CommandParameter="{Binding}" />
+                      <TextBlock Style="{StaticResource SettingsRecipientTextStyle}" Text="{Binding}" />
+                    </DockPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+        <TextBlock Style="{StaticResource SettingsStatusStyle}" Text="{Binding Status}" TextWrapping="Wrap" />
+        <Button Style="{StaticResource SettingsSaveButtonStyle}" Content="{Binding Resources.SaveEmailSettings}"
+                IsEnabled="{Binding CanSaveSettings}" Click="SaveClick" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Grid Grid.RowSpan="2" Style="{StaticResource SettingsEditorOverlayStyle}">
+      <Border Style="{StaticResource SettingsDialogStyle}">
+        <StackPanel>
+          <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding RecipientDialogTitle}" />
+          <TextBlock Style="{StaticResource SettingsDialogLabelStyle}" Text="{Binding Resources.EmailRecipientAddress}" />
+          <Grid>
+            <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="320"
+                     Text="{Binding RecipientDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                       Text="{Binding Resources.EmailRecipientExample}"
+                       Visibility="{Binding IsRecipientWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+          </Grid>
+          <TextBlock Style="{StaticResource SettingsRecipientValidationMessageStyle}"
+                     Text="{Binding RecipientDraftError}" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Style="{StaticResource SettingsSecondaryButtonStyle}" Content="{Binding Resources.Cancel}"
+                    Command="{Binding CancelRecipientCommand}" />
+            <Button Style="{StaticResource SettingsActionButtonStyle}" Content="{Binding Resources.SaveRecipient}"
+                    Command="{Binding SaveRecipientCommand}" IsEnabled="{Binding CanSaveRecipient}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <Grid Grid.RowSpan="2" Style="{StaticResource SettingsDeleteOverlayStyle}">
+      <Border Style="{StaticResource SettingsDialogStyle}">
+        <StackPanel>
+          <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding Resources.ConfirmDeleteRecipient}" />
+          <TextBlock Style="{StaticResource SettingsHintStyle}" Text="{Binding DeletingRecipient}" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Style="{StaticResource SettingsSecondaryButtonStyle}" Content="{Binding Resources.Cancel}"
+                    Command="{Binding CancelDeleteRecipientCommand}" />
+            <Button Style="{StaticResource SettingsDangerButtonStyle}" Content="{Binding Resources.DeleteRecipient}"
+                    Command="{Binding ConfirmDeleteRecipientCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
   </Grid>
 </Page>

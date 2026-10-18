@@ -1,0 +1,10 @@
+<Project Sdk="WixToolset.Sdk/7.0.0">
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <Platforms>x86;x64</Platforms>
+    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Package.wxs" Link="Package.wxs" />
+  </ItemGroup>
+</Project>

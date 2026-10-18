@@ -4,4 +4,6 @@
   <CornerRadius x:Key="TitleBarCornerRadius">15,15,0,0</CornerRadius>
   <CornerRadius x:Key="TitleBarButtonCornerRadius">9</CornerRadius>
   <CornerRadius x:Key="CalendarToolbarButtonCornerRadius">8</CornerRadius>
+  <CornerRadius x:Key="MiniCalendarToggleCornerRadius">0,12,12,0</CornerRadius>
+  <CornerRadius x:Key="MiniCalendarToggleCollapsedCornerRadius">12</CornerRadius>
 </ResourceDictionary>

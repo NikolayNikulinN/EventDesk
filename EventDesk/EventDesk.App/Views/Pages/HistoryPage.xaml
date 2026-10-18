@@ -29,6 +29,8 @@
                              Style="{StaticResource HistorySecondaryTextStyle}" />
                   <TextBlock Text="{Binding AttemptsLabel}"
                              Style="{StaticResource HistorySecondaryTextStyle}" />
+                  <TextBlock Text="{Binding ErrorLabel}"
+                             Style="{StaticResource HistorySecondaryTextStyle}" TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                   <TextBlock Text="{Binding StatusLabel}"

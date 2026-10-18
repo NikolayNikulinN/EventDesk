@@ -72,6 +72,7 @@ public sealed class ReminderDeliveryTests
                 await store.PrepareAsync(now, cancellationToken);
                 ReminderClaim claim = (await store.ClaimAsync(now, TimeSpan.FromMinutes(2), 3,
                     cancellationToken))!;
+                Assert.Equal("Prepare agenda", claim.EventDescription);
                 deliveryId = claim.DeliveryId;
                 Assert.True(await store.CompleteAsync(claim, now, cancellationToken));
             }
@@ -169,7 +170,8 @@ public sealed class ReminderDeliveryTests
         await using EventDeskDbContext context = new(options);
         await context.Database.MigrateAsync(cancellationToken);
         CalendarEvent calendarEvent = CalendarEvent.Create(Guid.NewGuid(), "Review",
-            now.AddMinutes(1), now.AddMinutes(31), TimeZoneInfo.Utc.Id);
+            now.AddMinutes(1), now.AddMinutes(31), TimeZoneInfo.Utc.Id,
+            description: "Prepare agenda");
         calendarEvent.AddReminder(ReminderRule.Create(TimeSpan.FromMinutes(5),
             ReminderChannel.Desktop));
         context.CalendarEvents.Add(calendarEvent);

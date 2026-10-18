@@ -52,11 +52,21 @@ public sealed class HistoryViewModel(
                     ReminderHistoryStatusCode.Canceled => resources.HistoryStatusCanceled,
                     _ => entry.Status.ToString()
                 };
+                string error = entry.LastErrorCode switch
+                {
+                    EmailConstants.NotConfigured => resources.HistoryErrorNotConfigured,
+                    EmailConstants.AuthenticationFailed => resources.HistoryErrorAuthentication,
+                    EmailConstants.ConnectionFailed => resources.HistoryErrorConnection,
+                    EmailConstants.Rejected => resources.HistoryErrorRejected,
+                    ReminderProcessingConstants.EndpointUnavailable => resources.HistoryErrorDesktopUnavailable,
+                    null => string.Empty,
+                    _ => resources.HistoryErrorDelivery
+                };
                 Rows.Add(new ReminderHistoryRow(entry.EventTitle,
                     string.Format(CultureInfo.CurrentCulture, resources.HistoryDueFormat,
                         entry.DueAtUtc.ToLocalTime()),
                     string.Format(CultureInfo.CurrentCulture, resources.HistoryAttemptsFormat,
-                        entry.AttemptCount), channel, status));
+                        entry.AttemptCount), channel, status, error));
             }
             Message = Rows.Count == 0 ? resources.HistoryEmpty : string.Empty;
         }
@@ -77,4 +87,4 @@ public sealed class HistoryViewModel(
 
 public sealed record ReminderHistoryRow(
     string EventTitle, string DueLabel, string AttemptsLabel,
-    string ChannelLabel, string StatusLabel);
+    string ChannelLabel, string StatusLabel, string ErrorLabel);

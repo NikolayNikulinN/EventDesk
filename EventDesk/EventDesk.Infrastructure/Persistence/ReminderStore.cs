@@ -141,8 +141,12 @@ public sealed class ReminderStore(EventDeskDbContext dbContext) : IReminderStore
             });
             await dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
+            string? description = await dbContext.CalendarEvents.AsNoTracking()
+                .Where(item => item.Id == delivery.EventId)
+                .Select(item => item.Description)
+                .SingleOrDefaultAsync(cancellationToken);
             return new ReminderClaim(delivery.Id, delivery.LeaseToken.Value,
-                delivery.EventId, delivery.EventTitle, delivery.Channel,
+                delivery.EventId, delivery.EventTitle, description, delivery.Channel,
                 delivery.DueAtUtc, delivery.AttemptCount);
         }
     }

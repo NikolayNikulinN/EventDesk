@@ -1,4 +1,5 @@
 using EventDesk.Constants;
+using EventDesk.Application.Email;
 using EventDesk.Logger.Abstract;
 using EventDesk.Logger.Enums;
 
@@ -37,7 +38,9 @@ public sealed class ReminderProcessor(
                 now = clock.GetUtcNow();
                 using CancellationTokenSource finish = new(TimeSpan.FromSeconds(5));
                 await store.FailAsync(claim, now, now + options.RetryDelay,
-                    exception is NotSupportedException || claim.AttemptNumber >= options.MaxAttempts,
+                    exception is NotSupportedException ||
+                    exception is EmailDeliveryException { IsPermanent: true } ||
+                    claim.AttemptNumber >= options.MaxAttempts,
                     GetErrorCode(exception), finish.Token);
                 continue;
             }
@@ -49,6 +52,7 @@ public sealed class ReminderProcessor(
 
     private static string GetErrorCode(Exception exception) => exception switch
     {
+        EmailDeliveryException email => email.ErrorCode,
         NotSupportedException => ReminderProcessingConstants.UnsupportedChannel,
         OperationCanceledException or TimeoutException => ReminderProcessingConstants.DeliveryTimedOut,
         IOException => ReminderProcessingConstants.EndpointUnavailable,

@@ -1,8 +1,10 @@
 using System.Text.Json;
 using EventDesk.Application.Events;
 using EventDesk.Application.Events.Models;
+using EventDesk.Application.Email;
 using EventDesk.Constants;
 using EventDesk.Contracts.Events;
+using EventDesk.Contracts.Email;
 using EventDesk.Contracts.Ipc;
 using EventDesk.Contracts.Reminders;
 using EventDesk.Application.Reminders;
@@ -13,7 +15,9 @@ using EventDesk.Logger.Enums;
 
 namespace EventDesk.Service;
 
-public sealed class IpcRequestDispatcher(CalendarEventService events, IReminderStore reminders, ILoggerWrapper logger)
+public sealed class IpcRequestDispatcher(
+    CalendarEventService events, IReminderStore reminders,
+    IEmailSettingsStore emailSettings, ILoggerWrapper logger)
 {
     public async Task<IpcResponse> DispatchAsync(IpcRequest request, CancellationToken cancellationToken)
     {
@@ -26,6 +30,8 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, IReminderS
                 IpcOperation.UpdateEvent => await UpdateEventAsync(request, cancellationToken),
                 IpcOperation.DeleteEvent => await DeleteEventAsync(request, cancellationToken),
                 IpcOperation.GetReminderHistory => await GetReminderHistoryAsync(request, cancellationToken),
+                IpcOperation.GetEmailSettings => await GetEmailSettingsAsync(request, cancellationToken),
+                IpcOperation.SaveEmailSettings => await SaveEmailSettingsAsync(request, cancellationToken),
                 _ => new IpcResponse(request.CorrelationId, IpcErrorCode.InvalidRequest, null)
             };
         }
@@ -89,6 +95,50 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, IReminderS
                 item.DueAtUtc, (ReminderHistoryStatusCode)item.Status, item.AttemptCount,
                 item.DeliveredAtUtc, item.LastErrorCode)).ToArray()));
     }
+
+    private async Task<IpcResponse> GetEmailSettingsAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        _ = IpcJson.FromPayload<GetEmailSettingsRequest>(request.Payload);
+        EmailSettings settings = await emailSettings.GetAsync(cancellationToken);
+        return Success(request.CorrelationId, ToEmailSettingsResponse(settings));
+    }
+
+    private async Task<IpcResponse> SaveEmailSettingsAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        SaveEmailSettingsRequest payload = IpcJson.FromPayload<SaveEmailSettingsRequest>(request.Payload);
+        EmailSettings current = await emailSettings.GetAsync(cancellationToken);
+        if (!payload.IsEnabled)
+        {
+            EmailSettings disabled = current with { IsEnabled = false };
+            await emailSettings.SaveAsync(disabled, cancellationToken);
+            return Success(request.CorrelationId, ToEmailSettingsResponse(disabled));
+        }
+        string host = payload.Host?.Trim() ?? throw new ArgumentException(EmailConstants.InvalidSettings);
+        string userName = payload.UserName?.Trim() ?? throw new ArgumentException(EmailConstants.InvalidSettings);
+        string fromAddress = payload.FromAddress?.Trim() ?? throw new ArgumentException(EmailConstants.InvalidSettings);
+        string[] recipientAddresses = payload.RecipientAddresses?
+            .Select(address => address?.Trim() ?? throw new ArgumentException(EmailConstants.InvalidSettings))
+            .ToArray() ?? throw new ArgumentException(EmailConstants.InvalidSettings);
+        bool connectionChanged = !string.Equals(host, current.Host, StringComparison.OrdinalIgnoreCase) ||
+            payload.Port != current.Port || payload.UseImplicitTls != current.UseImplicitTls ||
+            !string.Equals(userName, current.UserName, StringComparison.Ordinal) ||
+            !string.Equals(fromAddress, current.FromAddress, StringComparison.OrdinalIgnoreCase);
+        if (connectionChanged && string.IsNullOrEmpty(payload.Password) &&
+            !string.IsNullOrEmpty(current.Password))
+            throw new ArgumentException(EmailConstants.InvalidSettings);
+        string password = !string.IsNullOrEmpty(payload.Password) ? payload.Password : current.Password;
+        EmailSettings updated = new(payload.IsEnabled,
+            host, payload.Port, payload.UseImplicitTls, userName, fromAddress, recipientAddresses,
+            password);
+        EmailSettingsValidator.Validate(updated);
+        await emailSettings.SaveAsync(updated, cancellationToken);
+        return Success(request.CorrelationId, ToEmailSettingsResponse(updated));
+    }
+
+    private static EmailSettingsResponse ToEmailSettingsResponse(EmailSettings settings) => new(
+        settings.IsEnabled, settings.Host, settings.Port, settings.UseImplicitTls,
+        settings.UserName, settings.FromAddress, settings.RecipientAddresses.ToArray(),
+        !string.IsNullOrEmpty(settings.Password));
 
     private static IpcResponse Success<T>(Guid correlationId, T payload) =>
         new(correlationId, IpcErrorCode.None, IpcJson.ToPayload(payload));
