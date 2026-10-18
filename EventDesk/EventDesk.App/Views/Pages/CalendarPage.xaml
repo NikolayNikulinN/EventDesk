@@ -28,52 +28,69 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <StackPanel Grid.Column="0" Margin="{StaticResource CalendarStatusMargin}">
-        <TextBlock Foreground="{StaticResource MutedTextBrush}" Text="{Binding Status}" />
-        <TextBlock Foreground="{StaticResource ErrorBrush}" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
-      </StackPanel>
-      <WrapPanel x:Name="CalendarToolbar"
-                 Grid.Column="1"
-                 HorizontalAlignment="Right"
-                 VerticalAlignment="Bottom"
-                 Margin="{StaticResource CalendarToolbarMargin}">
-        <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
-                Command="{Binding PreviousWeekCommand}"
-                ToolTip="{Binding Resources.PreviousWeek}"
-                AutomationProperties.Name="{Binding Resources.PreviousWeek}">
-          <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
-                 Source="{Binding Resources.PreviousWeekIconPath}" />
-        </Button>
-        <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
-                Command="{Binding TodayCommand}"
-                ToolTip="{Binding Resources.Today}"
-                AutomationProperties.Name="{Binding Resources.Today}">
-          <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
-                 Source="{Binding Resources.TodayIconPath}" />
-        </Button>
-        <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
-                Command="{Binding NextWeekCommand}"
-                ToolTip="{Binding Resources.NextWeek}"
-                AutomationProperties.Name="{Binding Resources.NextWeek}">
-          <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
-                 Source="{Binding Resources.NextWeekIconPath}" />
-        </Button>
-        <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
-                Command="{Binding RefreshCommand}"
-                ToolTip="{Binding Resources.RefreshEvents}"
-                AutomationProperties.Name="{Binding Resources.RefreshEvents}">
-          <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
-                 Source="{Binding Resources.UpdateEventIconPath}" />
-        </Button>
-        <Button Style="{StaticResource CalendarToolbarPrimaryIconButtonStyle}"
-                Command="{Binding NewEventCommand}"
-                ToolTip="{Binding Resources.NewEvent}"
-                AutomationProperties.Name="{Binding Resources.NewEvent}">
-          <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
-                 Source="{Binding Resources.AddEventIconPath}" />
-        </Button>
-      </WrapPanel>
-      <calendar:MiniCalendarControl Grid.Row="1" Grid.Column="0" Width="260" />
+      <DockPanel Grid.ColumnSpan="2" LastChildFill="True">
+        <WrapPanel x:Name="CalendarToolbar"
+                   DockPanel.Dock="Right"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Margin="{StaticResource CalendarToolbarMargin}">
+          <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
+                  Command="{Binding PreviousWeekCommand}"
+                  ToolTip="{Binding Resources.PreviousWeek}"
+                  AutomationProperties.Name="{Binding Resources.PreviousWeek}">
+            <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
+                   Source="{Binding Resources.PreviousWeekIconPath}" />
+          </Button>
+          <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
+                  Command="{Binding TodayCommand}"
+                  ToolTip="{Binding Resources.Today}"
+                  AutomationProperties.Name="{Binding Resources.Today}">
+            <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
+                   Source="{Binding Resources.TodayIconPath}" />
+          </Button>
+          <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
+                  Command="{Binding NextWeekCommand}"
+                  ToolTip="{Binding Resources.NextWeek}"
+                  AutomationProperties.Name="{Binding Resources.NextWeek}">
+            <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
+                   Source="{Binding Resources.NextWeekIconPath}" />
+          </Button>
+          <Button Style="{StaticResource CalendarToolbarIconButtonStyle}"
+                  Command="{Binding RefreshCommand}"
+                  ToolTip="{Binding Resources.RefreshEvents}"
+                  AutomationProperties.Name="{Binding Resources.RefreshEvents}">
+            <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
+                   Source="{Binding Resources.UpdateEventIconPath}" />
+          </Button>
+          <Button Style="{StaticResource CalendarToolbarPrimaryIconButtonStyle}"
+                  Command="{Binding NewEventCommand}"
+                  ToolTip="{Binding Resources.NewEvent}"
+                  AutomationProperties.Name="{Binding Resources.NewEvent}">
+            <Image Style="{StaticResource CalendarToolbarIconImageStyle}"
+                   Source="{Binding Resources.AddEventIconPath}" />
+          </Button>
+        </WrapPanel>
+        <StackPanel Margin="{StaticResource CalendarStatusMargin}">
+          <TextBlock Foreground="{StaticResource MutedTextBrush}" Text="{Binding Status}" />
+          <TextBlock Foreground="{StaticResource ErrorBrush}" Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+        </StackPanel>
+      </DockPanel>
+      <Grid Grid.Row="1" Grid.Column="0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="MiniCalendarHost" Grid.Column="0"
+              Width="{x:Static calendar:CalendarLayout.MiniCalendarWidth}">
+          <calendar:MiniCalendarControl Width="{x:Static calendar:CalendarLayout.MiniCalendarWidth}"
+                                        HorizontalAlignment="Left" />
+        </Grid>
+        <ToggleButton Grid.Column="1"
+                      Style="{StaticResource CalendarMiniToggleButtonStyle}"
+                      IsChecked="{Binding IsMiniCalendarExpanded, Mode=TwoWay}"
+                      ToolTip="{Binding MiniCalendarToggleLabel}"
+                      AutomationProperties.Name="{Binding MiniCalendarToggleLabel}" />
+      </Grid>
       <calendar:WeekCalendarControl x:Name="WeekCalendar" Grid.Row="1" Grid.Column="1" />
     </Grid>
 

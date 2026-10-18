@@ -22,6 +22,10 @@ public interface IResourceWrapper
 
     string Calendar { get; }
 
+    string CollapseMiniCalendar { get; }
+
+    string ExpandMiniCalendar { get; }
+
     string RefreshEvents { get; }
 
     string LoadingEvents { get; }

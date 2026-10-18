@@ -116,6 +116,12 @@
 	<data name="Calendar" xml:space="preserve">
 		<value>Calendar</value>
 	</data>
+	<data name="CollapseMiniCalendar" xml:space="preserve">
+		<value>Hide mini calendar</value>
+	</data>
+	<data name="ExpandMiniCalendar" xml:space="preserve">
+		<value>Show mini calendar</value>
+	</data>
 	<data name="RefreshEvents" xml:space="preserve">
 		<value>Refresh</value>
 	</data>

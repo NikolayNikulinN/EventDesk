@@ -29,6 +29,10 @@ public sealed class ResourceWrapper : IResourceWrapper
 
     public string Calendar => GetString(nameof(Calendar));
 
+    public string CollapseMiniCalendar => GetString(nameof(CollapseMiniCalendar));
+
+    public string ExpandMiniCalendar => GetString(nameof(ExpandMiniCalendar));
+
     public string RefreshEvents => GetString(nameof(RefreshEvents));
 
     public string LoadingEvents => GetString(nameof(LoadingEvents));

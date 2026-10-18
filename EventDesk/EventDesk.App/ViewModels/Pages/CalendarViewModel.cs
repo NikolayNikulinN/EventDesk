@@ -23,6 +23,7 @@ public sealed class CalendarViewModel : ObservableObject
     private readonly ILoggerWrapper logger;
     private DateTime? selectedDate = DateTime.Today;
     private string weekRange = string.Empty;
+    private bool isMiniCalendarExpanded = true;
     private string status = string.Empty;
     private string errorMessage = string.Empty;
     private string editorError = string.Empty;
@@ -174,6 +175,22 @@ public sealed class CalendarViewModel : ObservableObject
         get => weekRange;
         private set => SetProperty(ref weekRange, value);
     }
+
+    public bool IsMiniCalendarExpanded
+    {
+        get => isMiniCalendarExpanded;
+        set
+        {
+            if (SetProperty(ref isMiniCalendarExpanded, value))
+            {
+                OnPropertyChanged(nameof(MiniCalendarToggleLabel));
+            }
+        }
+    }
+
+    public string MiniCalendarToggleLabel => IsMiniCalendarExpanded
+        ? Resources.CollapseMiniCalendar
+        : Resources.ExpandMiniCalendar;
 
     public string Status
     {
