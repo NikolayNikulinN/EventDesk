@@ -4,12 +4,14 @@ using EventDesk.App.ViewModels.Pages;
 using EventDesk.App.Views;
 using EventDesk.App.Views.Pages;
 using EventDesk.App.Services;
+using EventDesk.App.Notifications;
 using EventDesk.Constants;
 using EventDesk.Logger.Abstract;
 using EventDesk.Logger.Enums;
 using EventDesk.Logger.Wrappers;
 using EventDesk.Ipc.Abstractions;
 using EventDesk.Ipc.Client;
+using EventDesk.Ipc.Server;
 using EventDesk.Resources.Abstract;
 using EventDesk.Resources.Behaviors;
 using EventDesk.Resources.Wrappers;
@@ -20,10 +22,12 @@ using Wpf.Ui.DependencyInjection;
 
 namespace EventDesk.App;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     private IHost? host;
     private ILoggerWrapper? logger;
+    private bool isExiting;
+    private bool hostStopped;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -35,6 +39,11 @@ public partial class App : Application
         builder.Services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
         builder.Services.AddSingleton<IIpcClient>(new NamedPipeIpcClient(IpcConstants.PipeName));
         builder.Services.AddSingleton<ICalendarEventClient, CalendarEventIpcClient>();
+        builder.Services.AddSingleton<IReminderHistoryClient, ReminderHistoryIpcClient>();
+        builder.Services.AddSingleton<IDesktopReminderServer, NamedPipeDesktopReminderServer>();
+        builder.Services.AddSingleton<NotificationReceiptStore>();
+        builder.Services.AddSingleton<TrayNotificationService>();
+        builder.Services.AddHostedService<DesktopReminderReceiverWorker>();
         builder.Services.AddNavigationViewPageProvider();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddTransient<MainWindowViewModel>();
@@ -52,7 +61,6 @@ public partial class App : Application
         logger = host.Services.GetRequiredService<ILoggerWrapper>();
         try
         {
-            host.Start();
             MainWindow = host.Services.GetRequiredService<MainWindow>();
             MainWindow.Show();
 
@@ -60,6 +68,9 @@ public partial class App : Application
             {
                 throw new InvalidOperationException(ApplicationConstants.InitialCalendarNavigationFailed);
             }
+
+            host.Services.GetRequiredService<TrayNotificationService>().Initialize();
+            host.Start();
 
             logger.Write(ApplicationConstants.DesktopApplicationStarted);
         }
@@ -75,14 +86,44 @@ public partial class App : Application
         }
     }
 
+    public async Task ExitFromTrayAsync()
+    {
+        if (isExiting) return;
+        isExiting = true;
+
+        if (MainWindow is MainWindow mainWindow)
+            mainWindow.PrepareForExit();
+
+        try
+        {
+            if (host is not null)
+            {
+                logger?.Write(ApplicationConstants.DesktopApplicationStopping);
+                await host.StopAsync();
+            }
+        }
+        catch (Exception exception)
+        {
+            logger?.Write(exception, LogLevel.Error, ApplicationConstants.DesktopApplicationStopFailed);
+        }
+        finally
+        {
+            hostStopped = true;
+            Shutdown();
+        }
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         if (host is not null)
         {
             try
             {
-                logger?.Write(ApplicationConstants.DesktopApplicationStopping);
-                host.StopAsync().GetAwaiter().GetResult();
+                if (!hostStopped)
+                {
+                    logger?.Write(ApplicationConstants.DesktopApplicationStopping);
+                    host.StopAsync().GetAwaiter().GetResult();
+                }
             }
             finally
             {

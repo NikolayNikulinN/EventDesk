@@ -42,13 +42,6 @@ public sealed class MainWindowViewModel : ObservableObject
                 Icon = NavigationIcons.FromImage(resourceWrapper.MenuSettingsIconPath),
                 ToolTip = resourceWrapper.Settings,
                 TargetPageType = typeof(SettingsPage)
-            },
-            new NavigationViewItem
-            {
-                Content = resourceWrapper.About,
-                Icon = NavigationIcons.FromImage(resourceWrapper.MenuAboutIconPath),
-                ToolTip = resourceWrapper.About,
-                TargetPageType = typeof(AboutPage)
             }
         ];
     }

@@ -3,7 +3,44 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Style="{StaticResource ShellPageStyle}">
   <Grid Margin="{StaticResource ShellPadding}">
-    <TextBlock Style="{StaticResource ShellHeadingStyle}"
-               Text="{Binding Title}" />
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <TextBlock Style="{StaticResource ShellHeadingStyle}" Text="{Binding Title}" />
+    <TextBlock Grid.Row="1" Margin="0,12,0,12"
+               Style="{StaticResource HistorySecondaryTextStyle}"
+               Text="{Binding Message}" />
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+      <ItemsControl ItemsSource="{Binding Rows}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Style="{StaticResource HistoryCardStyle}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                  <TextBlock Text="{Binding EventTitle}"
+                             Style="{StaticResource HistoryTitleStyle}" />
+                  <TextBlock Text="{Binding DueLabel}"
+                             Style="{StaticResource HistorySecondaryTextStyle}" />
+                  <TextBlock Text="{Binding AttemptsLabel}"
+                             Style="{StaticResource HistorySecondaryTextStyle}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                  <TextBlock Text="{Binding StatusLabel}"
+                             Style="{StaticResource HistoryStatusStyle}" />
+                  <TextBlock Text="{Binding ChannelLabel}" HorizontalAlignment="Right"
+                             Style="{StaticResource HistorySecondaryTextStyle}" />
+                </StackPanel>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
   </Grid>
 </Page>

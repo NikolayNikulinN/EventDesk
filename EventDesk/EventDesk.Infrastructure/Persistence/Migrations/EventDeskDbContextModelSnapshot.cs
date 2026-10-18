@@ -77,6 +77,105 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                     b.ToTable("CalendarEvents", (string)null);
                 });
 
+            modelBuilder.Entity("EventDesk.Infrastructure.Persistence.ReminderAttemptRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("DeliveryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("FinishedAtUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("StartedAtUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("ReminderAttempts", (string)null);
+                });
+
+            modelBuilder.Entity("EventDesk.Infrastructure.Persistence.ReminderDeliveryRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("DeliveredAtUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("DueAtUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EventTitle")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastErrorCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("LeaseToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("LeaseUntilUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("NextAttemptAtUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status", "NextAttemptAtUtc");
+
+                    b.HasIndex("EventId", "Channel", "DueAtUtc")
+                        .IsUnique();
+
+                    b.ToTable("ReminderDeliveries", (string)null);
+                });
+
+            modelBuilder.Entity("EventDesk.Infrastructure.Persistence.ReminderScheduleCursor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ThroughUtc")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReminderScheduleCursor", (string)null);
+                });
+
             modelBuilder.Entity("EventDesk.Domain.Events.CalendarEvent", b =>
                 {
                     b.OwnsMany("EventDesk.Domain.Reminders.ReminderRule", "Reminders", b1 =>
@@ -113,6 +212,15 @@ namespace EventDesk.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("Reminders");
+                });
+
+            modelBuilder.Entity("EventDesk.Infrastructure.Persistence.ReminderAttemptRecord", b =>
+                {
+                    b.HasOne("EventDesk.Infrastructure.Persistence.ReminderDeliveryRecord", null)
+                        .WithMany()
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

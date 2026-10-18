@@ -210,4 +210,20 @@
 	<data name="Time24HourFormat" xml:space="preserve"><value>HH:mm</value></data>
 	<data name="EventTimeRangeFormat" xml:space="preserve"><value>{0:HH:mm}–{1:HH:mm}</value></data>
 	<data name="ApplyingEventChanges" xml:space="preserve"><value>Applying changes...</value></data>
+	<data name="TrayTooltip" xml:space="preserve"><value>EventDesk reminders</value></data>
+	<data name="OpenApplication" xml:space="preserve"><value>Open EventDesk</value></data>
+	<data name="ExitApplication" xml:space="preserve"><value>Exit</value></data>
+	<data name="ReminderNotificationTitle" xml:space="preserve"><value>Event reminder</value></data>
+	<data name="HistoryEmpty" xml:space="preserve"><value>No reminders have been scheduled yet.</value></data>
+	<data name="HistoryLoading" xml:space="preserve"><value>Loading reminder history...</value></data>
+	<data name="HistoryLoadFailed" xml:space="preserve"><value>Could not load reminder history. Check the service connection.</value></data>
+	<data name="HistoryDueFormat" xml:space="preserve"><value>Due {0:g}</value></data>
+	<data name="HistoryAttemptsFormat" xml:space="preserve"><value>Attempts: {0}</value></data>
+	<data name="HistoryChannelDesktop" xml:space="preserve"><value>Desktop</value></data>
+	<data name="HistoryChannelEmail" xml:space="preserve"><value>Email</value></data>
+	<data name="HistoryStatusPending" xml:space="preserve"><value>Pending</value></data>
+	<data name="HistoryStatusDelivering" xml:space="preserve"><value>Delivering</value></data>
+	<data name="HistoryStatusDelivered" xml:space="preserve"><value>Delivered</value></data>
+	<data name="HistoryStatusFailed" xml:space="preserve"><value>Failed</value></data>
+	<data name="HistoryStatusCanceled" xml:space="preserve"><value>Canceled</value></data>
 </root>

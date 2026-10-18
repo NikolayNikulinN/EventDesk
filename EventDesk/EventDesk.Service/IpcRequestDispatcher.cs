@@ -4,6 +4,8 @@ using EventDesk.Application.Events.Models;
 using EventDesk.Constants;
 using EventDesk.Contracts.Events;
 using EventDesk.Contracts.Ipc;
+using EventDesk.Contracts.Reminders;
+using EventDesk.Application.Reminders;
 using EventDesk.Domain.Reminders;
 using EventDesk.Ipc.Serialization;
 using EventDesk.Logger.Abstract;
@@ -11,7 +13,7 @@ using EventDesk.Logger.Enums;
 
 namespace EventDesk.Service;
 
-public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWrapper logger)
+public sealed class IpcRequestDispatcher(CalendarEventService events, IReminderStore reminders, ILoggerWrapper logger)
 {
     public async Task<IpcResponse> DispatchAsync(IpcRequest request, CancellationToken cancellationToken)
     {
@@ -23,6 +25,7 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
                 IpcOperation.CreateEvent => await CreateEventAsync(request, cancellationToken),
                 IpcOperation.UpdateEvent => await UpdateEventAsync(request, cancellationToken),
                 IpcOperation.DeleteEvent => await DeleteEventAsync(request, cancellationToken),
+                IpcOperation.GetReminderHistory => await GetReminderHistoryAsync(request, cancellationToken),
                 _ => new IpcResponse(request.CorrelationId, IpcErrorCode.InvalidRequest, null)
             };
         }
@@ -74,6 +77,17 @@ public sealed class IpcRequestDispatcher(CalendarEventService events, ILoggerWra
         DeleteEventRequest payload = IpcJson.FromPayload<DeleteEventRequest>(request.Payload);
         await events.DeleteAsync(payload.Id, cancellationToken);
         return Success(request.CorrelationId, new DeleteEventResponse(payload.Id));
+    }
+
+    private async Task<IpcResponse> GetReminderHistoryAsync(IpcRequest request, CancellationToken cancellationToken)
+    {
+        GetReminderHistoryRequest payload = IpcJson.FromPayload<GetReminderHistoryRequest>(request.Payload);
+        IReadOnlyList<ReminderHistoryItem> history = await reminders.GetHistoryAsync(payload.Limit, cancellationToken);
+        return Success(request.CorrelationId, new ReminderHistoryResponse(history.Select(item =>
+            new ReminderHistoryEntry(item.DeliveryId, item.EventTitle,
+                (ReminderHistoryChannelCode)item.Channel,
+                item.DueAtUtc, (ReminderHistoryStatusCode)item.Status, item.AttemptCount,
+                item.DeliveredAtUtc, item.LastErrorCode)).ToArray()));
     }
 
     private static IpcResponse Success<T>(Guid correlationId, T payload) =>

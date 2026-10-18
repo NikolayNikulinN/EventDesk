@@ -1,7 +1,9 @@
 using EventDesk.Constants;
 using EventDesk.Application;
+using EventDesk.Application.Reminders;
 using EventDesk.Infrastructure;
 using EventDesk.Service;
+using EventDesk.Service.Workers;
 using EventDesk.Logger.Abstract;
 using EventDesk.Logger.Enums;
 using EventDesk.Logger.Wrappers;
@@ -17,6 +19,10 @@ builder.Services.AddScoped<IpcRequestDispatcher>();
 builder.Services.AddSingleton(new NamedPipeIpcServer(
     IpcConstants.PipeName, () => PipeServerStreamFactory.Create(IpcConstants.PipeName)));
 builder.Services.AddHostedService<PipeServerWorker>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton(new ReminderProcessingOptions());
+builder.Services.AddScoped<ReminderProcessor>();
+builder.Services.AddHostedService<ReminderWorker>();
 string databasePath = DatabaseInitializer.GetDatabasePath();
 builder.Services.AddEventDeskInfrastructure(databasePath);
 
