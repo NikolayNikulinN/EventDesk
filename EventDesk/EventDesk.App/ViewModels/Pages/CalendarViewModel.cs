@@ -19,12 +19,14 @@ namespace EventDesk.App.ViewModels.Pages;
 public sealed class CalendarViewModel : ObservableObject
 {
     private readonly ICalendarEventClient eventClient;
+    private readonly EventOverlapDetector overlapDetector;
     private readonly ILoggerWrapper logger;
     private DateTime? selectedDate = DateTime.Today;
     private string weekRange = string.Empty;
     private string status = string.Empty;
     private string errorMessage = string.Empty;
     private string editorError = string.Empty;
+    private string overlapWarning = string.Empty;
     private string editorHeading = string.Empty;
     private string eventTitle = string.Empty;
     private string eventDescription = string.Empty;
@@ -40,14 +42,20 @@ public sealed class CalendarViewModel : ObservableObject
     private bool isSaving;
     private bool isDeleteConfirmationVisible;
     private ReminderOption? selectedReminder;
+    private EventRecurrenceOption? selectedRecurrence;
+    private NotificationIntervalOption? selectedNotificationInterval;
+    private int selectedMonthOfYear;
+    private int selectedDayOfMonth;
     private CalendarColorOption? selectedColor;
     private CalendarEventResponse? editedEvent;
     private bool reminderChanged;
+    private OverlapSchedule? pendingOverlapSchedule;
     private int loadVersion;
 
     public CalendarViewModel(ICalendarEventClient eventClient, IResourceWrapper resources, ILoggerWrapper logger)
     {
         this.eventClient = eventClient;
+        overlapDetector = new EventOverlapDetector(eventClient);
         this.logger = logger;
         Resources = resources;
         ColorOptions = CalendarColorPalette.CreateOptions(resources);
@@ -61,6 +69,28 @@ public sealed class CalendarViewModel : ObservableObject
             new ReminderOption(60, resources.ReminderOneHour)
         ];
         selectedReminder = ReminderOptions[0];
+        RecurrenceOptions =
+        [
+            new EventRecurrenceOption(EventRecurrenceCode.None, resources.EventRepeatOnce),
+            new EventRecurrenceOption(EventRecurrenceCode.Yearly, resources.EventRepeatYearly),
+            new EventRecurrenceOption(EventRecurrenceCode.Monthly, resources.EventRepeatMonthly)
+        ];
+        selectedRecurrence = RecurrenceOptions[0];
+        NotificationIntervalOptions =
+        [
+            new NotificationIntervalOption(30, resources.EveryThirtyMinutes),
+            new NotificationIntervalOption(60, resources.EveryHour),
+            new NotificationIntervalOption(120, resources.EveryTwoHours),
+            new NotificationIntervalOption(180, resources.EveryThreeHours),
+            new NotificationIntervalOption(240, resources.EveryFourHours),
+            new NotificationIntervalOption(360, resources.EverySixHours)
+        ];
+        selectedNotificationInterval = NotificationIntervalOptions[3];
+        selectedMonthOfYear = DateTime.Today.Month;
+        selectedDayOfMonth = DateTime.Today.Day;
+        MonthsOfYear = Enumerable.Range(1, 12)
+            .Select(month => new MonthOption(month, CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)))
+            .ToArray();
         HourLabels = Enumerable.Range(0, 24)
             .Select(hour => DateTime.Today.AddHours(hour).ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture))
             .ToArray();
@@ -86,6 +116,14 @@ public sealed class CalendarViewModel : ObservableObject
     public IReadOnlyList<string> HourLabels { get; }
 
     public IReadOnlyList<ReminderOption> ReminderOptions { get; }
+
+    public IReadOnlyList<EventRecurrenceOption> RecurrenceOptions { get; }
+
+    public IReadOnlyList<NotificationIntervalOption> NotificationIntervalOptions { get; }
+
+    public IReadOnlyList<int> DaysOfMonth { get; } = Enumerable.Range(1, 31).ToArray();
+
+    public IReadOnlyList<MonthOption> MonthsOfYear { get; }
 
     public IReadOnlyList<CalendarColorOption> ColorOptions { get; }
 
@@ -196,6 +234,14 @@ public sealed class CalendarViewModel : ObservableObject
         private set => SetProperty(ref editorError, value);
     }
 
+    public string OverlapWarning
+    {
+        get => overlapWarning;
+        private set => SetProperty(ref overlapWarning, value);
+    }
+
+    public string SaveButtonLabel => pendingOverlapSchedule is null ? Resources.SaveEvent : Resources.SaveAnyway;
+
     public string EventTitle
     {
         get => eventTitle;
@@ -227,6 +273,7 @@ public sealed class CalendarViewModel : ObservableObject
         {
             if (SetProperty(ref startDate, value))
             {
+                ClearOverlapWarning();
                 SaveEventCommand.NotifyCanExecuteChanged();
             }
         }
@@ -239,6 +286,7 @@ public sealed class CalendarViewModel : ObservableObject
         {
             if (SetProperty(ref endDate, value))
             {
+                ClearOverlapWarning();
                 SaveEventCommand.NotifyCanExecuteChanged();
             }
         }
@@ -254,6 +302,7 @@ public sealed class CalendarViewModel : ObservableObject
                 return;
             }
 
+            ClearOverlapWarning();
             if (TimeOnly.TryParse(value, CultureInfo.CurrentCulture, out TimeOnly parsed))
             {
                 double minute = parsed.Hour * 60 + parsed.Minute;
@@ -265,6 +314,8 @@ public sealed class CalendarViewModel : ObservableObject
             }
 
             SaveEventCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(NotificationTimesPreview));
+            OnPropertyChanged(nameof(NotificationWindowError));
         }
     }
 
@@ -278,6 +329,7 @@ public sealed class CalendarViewModel : ObservableObject
                 return;
             }
 
+            ClearOverlapWarning();
             if (TimeOnly.TryParse(value, CultureInfo.CurrentCulture, out TimeOnly parsed))
             {
                 double minute = parsed.Hour * 60 + parsed.Minute;
@@ -289,6 +341,8 @@ public sealed class CalendarViewModel : ObservableObject
             }
 
             SaveEventCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(NotificationTimesPreview));
+            OnPropertyChanged(nameof(NotificationWindowError));
         }
     }
 
@@ -333,7 +387,13 @@ public sealed class CalendarViewModel : ObservableObject
     public bool IsEnabled
     {
         get => isEnabled;
-        set => SetProperty(ref isEnabled, value);
+        set
+        {
+            if (SetProperty(ref isEnabled, value))
+            {
+                ClearOverlapWarning();
+            }
+        }
     }
 
     public ReminderOption? SelectedReminder
@@ -347,6 +407,117 @@ public sealed class CalendarViewModel : ObservableObject
                 SaveEventCommand.NotifyCanExecuteChanged();
             }
         }
+    }
+
+    public EventRecurrenceOption? SelectedRecurrence
+    {
+        get => selectedRecurrence;
+        set
+        {
+            EventRecurrenceCode oldCode = selectedRecurrence?.Code ?? EventRecurrenceCode.None;
+            if (!SetProperty(ref selectedRecurrence, value))
+            {
+                return;
+            }
+
+            ClearOverlapWarning();
+            if (oldCode == EventRecurrenceCode.None && IsRecurringEvent && editedEvent is null)
+            {
+                StartTime = DateTime.Today.AddHours(11).ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture);
+                EndTime = DateTime.Today.AddHours(17).ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture);
+            }
+
+            OnPropertyChanged(nameof(IsOneTimeEvent));
+            OnPropertyChanged(nameof(IsYearlyEvent));
+            OnPropertyChanged(nameof(IsMonthlyEvent));
+            OnPropertyChanged(nameof(IsRecurringEvent));
+            OnPropertyChanged(nameof(StartTimeLabel));
+            OnPropertyChanged(nameof(EndTimeLabel));
+            OnPropertyChanged(nameof(NotificationTimesPreview));
+            OnPropertyChanged(nameof(NotificationWindowError));
+            SaveEventCommand.NotifyCanExecuteChanged();
+        }
+    }
+
+    public NotificationIntervalOption? SelectedNotificationInterval
+    {
+        get => selectedNotificationInterval;
+        set
+        {
+            if (SetProperty(ref selectedNotificationInterval, value))
+            {
+                ClearOverlapWarning();
+                OnPropertyChanged(nameof(NotificationTimesPreview));
+                OnPropertyChanged(nameof(NotificationWindowError));
+                SaveEventCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public int SelectedDayOfMonth
+    {
+        get => selectedDayOfMonth;
+        set
+        {
+            if (SetProperty(ref selectedDayOfMonth, value))
+            {
+                ClearOverlapWarning();
+                SaveEventCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public int SelectedMonthOfYear
+    {
+        get => selectedMonthOfYear;
+        set
+        {
+            if (SetProperty(ref selectedMonthOfYear, value))
+            {
+                ClearOverlapWarning();
+                SaveEventCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool IsOneTimeEvent => SelectedRecurrence?.Code == EventRecurrenceCode.None;
+
+    public bool IsYearlyEvent => SelectedRecurrence?.Code == EventRecurrenceCode.Yearly;
+
+    public bool IsMonthlyEvent => SelectedRecurrence?.Code == EventRecurrenceCode.Monthly;
+
+    public bool IsRecurringEvent => IsYearlyEvent || IsMonthlyEvent;
+
+    public string StartTimeLabel => IsRecurringEvent ? Resources.FirstNotification : Resources.StartTime;
+
+    public string EndTimeLabel => IsRecurringEvent ? Resources.LastNotification : Resources.EndTime;
+
+    public string NotificationTimesPreview
+    {
+        get
+        {
+            if (!IsRecurringEvent || !TryGetRecurringWindow(out TimeOnly first, out TimeOnly last, out int interval))
+            {
+                return string.Empty;
+            }
+
+            return string.Join(", ", Enumerable.Range(0, (last.Hour * 60 + last.Minute - first.Hour * 60 - first.Minute) / interval + 1)
+                .Select(index => first.AddMinutes(index * interval)
+                    .ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture)));
+        }
+    }
+
+    public string NotificationWindowError => IsRecurringEvent &&
+        !TryGetRecurringWindow(out _, out _, out _) ? Resources.NotificationWindowInvalid : string.Empty;
+
+    private bool TryGetRecurringWindow(out TimeOnly first, out TimeOnly last, out int interval)
+    {
+        interval = SelectedNotificationInterval?.Minutes ?? 0;
+        bool hasFirstTime = TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out first);
+        bool hasLastTime = TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out last);
+        return hasFirstTime && hasLastTime &&
+            interval > 0 && first < last &&
+            (last.Hour * 60 + last.Minute - first.Hour * 60 - first.Minute) % interval == 0;
     }
 
     private void MoveWeek(int days) => SelectedDate = (SelectedDate ?? DateTime.Today).AddDays(days);
@@ -439,10 +610,15 @@ public sealed class CalendarViewModel : ObservableObject
         EndTime = DateTime.Today.AddHours(10).ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture);
         IsEnabled = true;
         SelectedReminder = ReminderOptions[0];
+        SelectedRecurrence = RecurrenceOptions[0];
+        SelectedNotificationInterval = NotificationIntervalOptions[3];
+        SelectedMonthOfYear = StartDate.Value.Month;
+        SelectedDayOfMonth = StartDate.Value.Day;
         SelectedColor = ColorOptions[0];
         reminderChanged = false;
         EditorHeading = Resources.NewEvent;
         EditorError = string.Empty;
+        ClearOverlapWarning();
         IsDeleteConfirmationVisible = false;
         IsEditing = true;
     }
@@ -468,11 +644,17 @@ public sealed class CalendarViewModel : ObservableObject
         ReminderRuleDto? simpleReminder = item.Source.Reminders.FirstOrDefault(IsSimpleDesktopReminder);
         SelectedReminder = ReminderOptions.FirstOrDefault(option =>
             option.Minutes == (int)(simpleReminder?.LeadTime.TotalMinutes ?? 0)) ?? ReminderOptions[0];
+        SelectedRecurrence = RecurrenceOptions.First(option => option.Code == item.Source.Recurrence);
+        SelectedNotificationInterval = NotificationIntervalOptions.FirstOrDefault(option =>
+            option.Minutes == item.Source.NotificationIntervalMinutes) ?? NotificationIntervalOptions[3];
+        SelectedMonthOfYear = item.Source.RecurrenceMonth ?? start.Month;
+        SelectedDayOfMonth = item.Source.RecurrenceDay ?? start.Day;
         SelectedColor = ColorOptions.FirstOrDefault(option =>
             string.Equals(option.ColorHex, item.Source.ColorHex, StringComparison.OrdinalIgnoreCase)) ?? ColorOptions[0];
         reminderChanged = false;
         EditorHeading = Resources.EditEvent;
         EditorError = string.Empty;
+        ClearOverlapWarning();
         IsDeleteConfirmationVisible = false;
         IsEditing = true;
     }
@@ -488,11 +670,36 @@ public sealed class CalendarViewModel : ObservableObject
         EditorError = string.Empty;
         try
         {
+            OverlapSchedule schedule = OverlapSchedule.From(model!);
+            if (pendingOverlapSchedule != schedule)
+            {
+                CalendarEventResponse? conflict = await overlapDetector.FindFirstAsync(
+                    model!, editedEvent?.Id, SelectedDate ?? DateTime.Today, cancellationToken);
+                if (conflict is not null)
+                {
+                    pendingOverlapSchedule = schedule;
+                    OverlapWarning = string.Format(CultureInfo.CurrentCulture,
+                        Resources.EventOverlapWarningFormat, conflict.Title,
+                        conflict.StartsAtUtc.ToLocalTime(), conflict.EndsAtUtc.ToLocalTime());
+                    OnPropertyChanged(nameof(SaveButtonLabel));
+                    return;
+                }
+            }
+
+            ClearOverlapWarning();
             CalendarEventResponse saved = editedEvent is { } current
                 ? await eventClient.UpdateAsync(current.Id, model!, cancellationToken)
                 : await eventClient.CreateAsync(model!, cancellationToken);
             IsEditing = false;
-            selectedDate = saved.StartsAtUtc.ToLocalTime().Date;
+            if (saved.Recurrence == EventRecurrenceCode.None)
+            {
+                selectedDate = saved.StartsAtUtc.ToLocalTime().Date;
+            }
+            else
+            {
+                selectedDate = FindNextRecurringDate(saved, SelectedDate ?? DateTime.Today);
+            }
+
             OnPropertyChanged(nameof(SelectedDate));
             UpdateWeekRange();
             await RefreshAsync(cancellationToken);
@@ -511,13 +718,36 @@ public sealed class CalendarViewModel : ObservableObject
         }
     }
 
-    private bool CanSaveEvent() => IsEditing && !IsSaving &&
-        !string.IsNullOrWhiteSpace(EventTitle) && EventTitle.Length <= 500 &&
-        !string.IsNullOrWhiteSpace(EventDescription) && EventDescription.Length <= 2000 &&
-        StartDate is not null && EndDate is not null &&
-        TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out _) &&
-        TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out _) &&
-        SelectedReminder is not null && SelectedColor is not null;
+    private void ClearOverlapWarning()
+    {
+        if (pendingOverlapSchedule is null && overlapWarning.Length == 0)
+        {
+            return;
+        }
+
+        pendingOverlapSchedule = null;
+        OverlapWarning = string.Empty;
+        OnPropertyChanged(nameof(SaveButtonLabel));
+    }
+
+    private bool CanSaveEvent()
+    {
+        if (!IsEditing || IsSaving || string.IsNullOrWhiteSpace(EventTitle) || EventTitle.Length > 500 ||
+            string.IsNullOrWhiteSpace(EventDescription) || EventDescription.Length > 2000 ||
+            SelectedColor is null || SelectedRecurrence is null)
+        {
+            return false;
+        }
+
+        return IsRecurringEvent
+            ? SelectedDayOfMonth is >= 1 and <= 31 &&
+              (!IsYearlyEvent || SelectedMonthOfYear is >= 1 and <= 12 &&
+                  SelectedDayOfMonth <= DateTime.DaysInMonth(2024, SelectedMonthOfYear)) &&
+              TryGetRecurringWindow(out _, out _, out _)
+            : StartDate is not null && EndDate is not null && SelectedReminder is not null &&
+              TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out _) &&
+              TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out _);
+    }
 
     private async Task DeleteAsync(CancellationToken cancellationToken)
     {
@@ -565,22 +795,58 @@ public sealed class CalendarViewModel : ObservableObject
         }
 
         if (EventTitle.Length > 500 || EventDescription.Length > 2000 ||
-            SelectedReminder is null || SelectedColor is null)
+            SelectedColor is null || SelectedRecurrence is null ||
+            (!IsRecurringEvent && SelectedReminder is null))
         {
             EditorError = Resources.InvalidEventData;
             return false;
         }
 
-        if (StartDate is not { } startDateValue || EndDate is not { } endDateValue ||
-            !TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out TimeOnly startTimeValue) ||
+        if (!TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out TimeOnly startTimeValue) ||
             !TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out TimeOnly endTimeValue))
         {
             EditorError = Resources.EventDateTimeRequired;
             return false;
         }
 
-        DateTime localStart = startDateValue.Date.Add(startTimeValue.ToTimeSpan());
-        DateTime localEnd = endDateValue.Date.Add(endTimeValue.ToTimeSpan());
+        DateTime startDateValue;
+        DateTime endDateValue;
+        int? recurrenceMonth = null;
+        int? recurrenceDay = null;
+        int? intervalMinutes = null;
+        if (IsRecurringEvent)
+        {
+            if (!TryGetRecurringWindow(out _, out _, out int interval) ||
+                SelectedDayOfMonth is < 1 or > 31 ||
+                (IsYearlyEvent && (SelectedMonthOfYear is < 1 or > 12 ||
+                    SelectedDayOfMonth > DateTime.DaysInMonth(2024, SelectedMonthOfYear))))
+            {
+                EditorError = Resources.NotificationWindowInvalid;
+                return false;
+            }
+
+            startDateValue = IsYearlyEvent
+                ? GetYearlyAnchor(SelectedMonthOfYear, SelectedDayOfMonth, startTimeValue, endTimeValue)
+                : GetMonthlyAnchor(SelectedDayOfMonth, startTimeValue, endTimeValue);
+            endDateValue = startDateValue;
+            recurrenceMonth = IsYearlyEvent ? SelectedMonthOfYear : null;
+            recurrenceDay = SelectedDayOfMonth;
+            intervalMinutes = interval;
+        }
+        else
+        {
+            if (StartDate is not { } startDate || EndDate is not { } endDate)
+            {
+                EditorError = Resources.EventDateTimeRequired;
+                return false;
+            }
+
+            startDateValue = startDate.Date;
+            endDateValue = endDate.Date;
+        }
+
+        DateTime localStart = startDateValue.Add(startTimeValue.ToTimeSpan());
+        DateTime localEnd = endDateValue.Add(endTimeValue.ToTimeSpan());
         if (TimeZoneInfo.Local.IsInvalidTime(localStart) || TimeZoneInfo.Local.IsInvalidTime(localEnd))
         {
             EditorError = Resources.EventTimeInvalid;
@@ -593,21 +859,81 @@ public sealed class CalendarViewModel : ObservableObject
             return false;
         }
 
-        List<ReminderRuleDto> reminders = editedEvent?.Reminders
-            .Where(rule => !reminderChanged || !IsSimpleDesktopReminder(rule)).ToList() ?? [];
-        if ((editedEvent is null || reminderChanged) && SelectedReminder is { Minutes: > 0 } reminder)
+        List<ReminderRuleDto> reminders = IsRecurringEvent ? [] :
+            editedEvent?.Reminders.Where(rule => !reminderChanged || !IsSimpleDesktopReminder(rule)).ToList() ?? [];
+        if (!IsRecurringEvent && (editedEvent is null || reminderChanged) &&
+            SelectedReminder is { Minutes: > 0 } reminder)
         {
             reminders.Add(new ReminderRuleDto(TimeSpan.FromMinutes(reminder.Minutes), ReminderChannelCode.Desktop, 1, null));
         }
 
         model = new SaveEventDto(EventTitle.Trim(), ToLocalOffset(localStart), ToLocalOffset(localEnd),
-            TimeZoneInfo.Local.Id, IsEnabled, reminders, EventDescription.Trim(), SelectedColor.ColorHex);
+            TimeZoneInfo.Local.Id, IsEnabled, reminders, EventDescription.Trim(), SelectedColor.ColorHex,
+            SelectedRecurrence.Code, recurrenceMonth, recurrenceDay, intervalMinutes);
         EditorError = string.Empty;
         return true;
     }
 
     private static bool IsSimpleDesktopReminder(ReminderRuleDto rule) =>
         rule.Channel == ReminderChannelCode.Desktop && rule.OccurrenceCount == 1 && rule.RepeatInterval is null;
+
+    private static DateTime GetMonthlyAnchor(int day, TimeOnly first, TimeOnly last)
+    {
+        DateTime month = new(DateTime.Today.Year, DateTime.Today.Month, 1);
+        for (int offset = 0; offset < 24; offset++)
+        {
+            DateTime candidateMonth = month.AddMonths(offset);
+            if (day > DateTime.DaysInMonth(candidateMonth.Year, candidateMonth.Month))
+            {
+                continue;
+            }
+
+            DateTime date = new(candidateMonth.Year, candidateMonth.Month, day);
+            if (!TimeZoneInfo.Local.IsInvalidTime(date.Add(first.ToTimeSpan())) &&
+                !TimeZoneInfo.Local.IsInvalidTime(date.Add(last.ToTimeSpan())))
+            {
+                return date;
+            }
+        }
+
+        throw new InvalidOperationException(DomainValidationMessages.EventNotificationWindowInvalid);
+    }
+
+    private static DateTime FindNextRecurringDate(CalendarEventResponse calendarEvent, DateTime from)
+    {
+        for (DateTime date = from.Date; date < from.Date.AddYears(8); date = date.AddDays(1))
+        {
+            if (calendarEvent.Recurrence == EventRecurrenceCode.Yearly &&
+                date.Month == calendarEvent.RecurrenceMonth && date.Day == calendarEvent.RecurrenceDay ||
+                calendarEvent.Recurrence == EventRecurrenceCode.Monthly &&
+                date.Day == calendarEvent.RecurrenceDay)
+            {
+                return date;
+            }
+        }
+
+        return from.Date;
+    }
+
+    private static DateTime GetYearlyAnchor(int month, int day, TimeOnly first, TimeOnly last)
+    {
+        for (int year = DateTime.Today.Year; year < DateTime.Today.Year + 8; year++)
+        {
+            if (day > DateTime.DaysInMonth(year, month))
+            {
+                continue;
+            }
+
+            DateTime date = new(year, month, day);
+            if (!TimeZoneInfo.Local.IsInvalidTime(date.Add(first.ToTimeSpan())) &&
+                !TimeZoneInfo.Local.IsInvalidTime(date.Add(last.ToTimeSpan())))
+            {
+                return date;
+            }
+        }
+
+        throw new InvalidOperationException(DomainValidationMessages.EventNotificationWindowInvalid);
+    }
 
     private static DateTimeOffset ToLocalOffset(DateTime local) =>
         new(local, TimeZoneInfo.Local.GetUtcOffset(local));
@@ -622,4 +948,18 @@ public sealed class CalendarViewModel : ObservableObject
             _ => fallback
         }
         : fallback;
+
+    private readonly record struct OverlapSchedule(
+        DateTimeOffset StartsAt,
+        DateTimeOffset EndsAt,
+        EventRecurrenceCode Recurrence,
+        int? RecurrenceMonth,
+        int? RecurrenceDay,
+        int? NotificationIntervalMinutes,
+        bool IsEnabled)
+    {
+        public static OverlapSchedule From(SaveEventDto model) => new(
+            model.StartsAt, model.EndsAt, model.Recurrence, model.RecurrenceMonth,
+            model.RecurrenceDay, model.NotificationIntervalMinutes, model.IsEnabled);
+    }
 }

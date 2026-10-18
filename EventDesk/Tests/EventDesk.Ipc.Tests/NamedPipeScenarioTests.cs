@@ -115,6 +115,29 @@ public sealed class NamedPipeScenarioTests
                     IpcOperation.GetEvents, period, cancellationToken);
                 Assert.Empty(afterDelete.Events);
 
+                SaveEventDto annual = new(
+                    "Leap birthday", new DateTimeOffset(2028, 2, 29, 11, 0, 0, TimeSpan.Zero),
+                    new DateTimeOffset(2028, 2, 29, 17, 0, 0, TimeSpan.Zero), TimeZoneInfo.Utc.Id,
+                    true, [], "Birthday reminder", "#259B70", EventRecurrenceCode.Yearly, 2, 29, 180);
+                CalendarEventResponse annualCreated = await client.SendAsync<CreateEventRequest, CalendarEventResponse>(
+                    IpcOperation.CreateEvent, new CreateEventRequest(annual), cancellationToken);
+                Assert.Equal(EventRecurrenceCode.Yearly, annualCreated.Recurrence);
+                GetEventsResponse skippedYear = await client.SendAsync<GetEventsRequest, GetEventsResponse>(
+                    IpcOperation.GetEvents, new GetEventsRequest(
+                        new DateTimeOffset(2027, 2, 1, 0, 0, 0, TimeSpan.Zero),
+                        new DateTimeOffset(2027, 3, 1, 0, 0, 0, TimeSpan.Zero)), cancellationToken);
+                Assert.Empty(skippedYear.Events);
+                GetEventsResponse leapYear = await client.SendAsync<GetEventsRequest, GetEventsResponse>(
+                    IpcOperation.GetEvents, new GetEventsRequest(
+                        new DateTimeOffset(2032, 2, 29, 0, 0, 0, TimeSpan.Zero),
+                        new DateTimeOffset(2032, 3, 1, 0, 0, 0, TimeSpan.Zero)), cancellationToken);
+                CalendarEventResponse annualOccurrence = Assert.Single(leapYear.Events);
+                Assert.Equal(annualCreated.Id, annualOccurrence.Id);
+                Assert.Equal(11, annualOccurrence.StartsAtUtc.Hour);
+                Assert.Equal(17, annualOccurrence.EndsAtUtc.Hour);
+                await client.SendAsync<DeleteEventRequest, DeleteEventResponse>(
+                    IpcOperation.DeleteEvent, new DeleteEventRequest(annualCreated.Id), cancellationToken);
+
                 CalendarViewModel calendar = new(
                     new CalendarEventIpcClient(client), new ResourceWrapper(), new NullLogger());
                 await calendar.RefreshCommand.ExecuteAsync(null);

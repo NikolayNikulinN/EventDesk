@@ -16,10 +16,18 @@ public sealed class CalendarEventRepository(EventDeskDbContext dbContext) : ICal
         await dbContext.CalendarEvents
             .AsNoTracking()
             .Where(calendarEvent => !calendarEvent.IsDeleted
+                && calendarEvent.RecurrenceKind == EventRecurrenceKind.None
                 && calendarEvent.StartsAtUtc < toUtc
                 && calendarEvent.EndsAtUtc > fromUtc)
             .OrderBy(calendarEvent => calendarEvent.StartsAtUtc)
             .ThenBy(calendarEvent => calendarEvent.Id)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<CalendarEvent>> GetRecurringAsync(CancellationToken cancellationToken = default) =>
+        await dbContext.CalendarEvents
+            .AsNoTracking()
+            .Where(calendarEvent => !calendarEvent.IsDeleted &&
+                calendarEvent.RecurrenceKind != EventRecurrenceKind.None)
             .ToListAsync(cancellationToken);
 
     public async Task AddAsync(CalendarEvent calendarEvent, CancellationToken cancellationToken = default) =>

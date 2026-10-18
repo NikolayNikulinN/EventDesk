@@ -130,8 +130,48 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
-  <Style x:Key="CalendarEditorTimeSliderStyle" TargetType="Slider"
-         BasedOn="{StaticResource {x:Type Slider}}">
+  <Style x:Key="CalendarEditorSliderTrackButtonStyle" TargetType="RepeatButton">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Height="4"
+                  VerticalAlignment="Center"
+                  CornerRadius="2"
+                  Background="{TemplateBinding Background}" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorSliderThumbStyle" TargetType="Thumb">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="SliderThumb"
+                  Width="20"
+                  Height="20"
+                  CornerRadius="10"
+                  Background="{DynamicResource CalendarAccentBrush}"
+                  BorderBrush="{DynamicResource CalendarAccentBrush}"
+                  BorderThickness="2" />
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="SliderThumb" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+              <Setter TargetName="SliderThumb" Property="Background" Value="{DynamicResource MiniCalendarTodayBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CalendarEditorTimeSliderStyle" TargetType="Slider">
     <Setter Property="Minimum" Value="0" />
     <Setter Property="Maximum" Value="1439" />
     <Setter Property="TickFrequency" Value="1" />
@@ -141,6 +181,32 @@
     <Setter Property="MinHeight" Value="34" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Margin" Value="0,0,10,0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Slider">
+          <Grid Height="34" Background="Transparent">
+            <Track x:Name="PART_Track"
+                   VerticalAlignment="Center"
+                   Height="20"
+                   IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+              <Track.DecreaseRepeatButton>
+                <RepeatButton Style="{StaticResource CalendarEditorSliderTrackButtonStyle}"
+                              Background="{DynamicResource CalendarAccentBrush}"
+                              Command="Slider.DecreaseLarge" />
+              </Track.DecreaseRepeatButton>
+              <Track.Thumb>
+                <Thumb Style="{StaticResource CalendarEditorSliderThumbStyle}" />
+              </Track.Thumb>
+              <Track.IncreaseRepeatButton>
+                <RepeatButton Style="{StaticResource CalendarEditorSliderTrackButtonStyle}"
+                              Background="{DynamicResource CalendarToolbarBorderBrush}"
+                              Command="Slider.IncreaseLarge" />
+              </Track.IncreaseRepeatButton>
+            </Track>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Style x:Key="CalendarEditorTimeValueStyle" TargetType="TextBlock">
@@ -155,9 +221,65 @@
     <Setter Property="Stretch" Value="Uniform" />
   </Style>
 
-  <Style x:Key="CalendarEditorCheckBoxStyle" TargetType="CheckBox"
-         BasedOn="{StaticResource DefaultCheckBoxStyle}">
+  <Style x:Key="CalendarEditorCheckBoxStyle" TargetType="CheckBox">
     <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Border Background="Transparent">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <Border x:Name="CheckBoxIndicator"
+                      Width="18"
+                      Height="18"
+                      CornerRadius="4"
+                      Background="{DynamicResource CalendarSurfaceBrush}"
+                      BorderBrush="{DynamicResource CalendarToolbarBorderBrush}"
+                      BorderThickness="1">
+                <Path x:Name="CheckBoxGlyph"
+                      Width="12"
+                      Height="12"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Stretch="None"
+                      Data="M 1,6 L 4.5,9 L 11,2.5"
+                      Stroke="White"
+                      StrokeThickness="1.75"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Visibility="Collapsed" />
+              </Border>
+              <ContentPresenter ContentSource="Content"
+                                RecognizesAccessKey="True"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0" />
+            </StackPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="CheckBoxIndicator" Property="Background" Value="{DynamicResource CalendarAccentBrush}" />
+              <Setter TargetName="CheckBoxIndicator" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+              <Setter TargetName="CheckBoxGlyph" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="CheckBoxIndicator" Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+              <Setter TargetName="CheckBoxIndicator" Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsChecked" Value="True" />
+                <Condition Property="IsMouseOver" Value="True" />
+              </MultiTrigger.Conditions>
+              <Setter TargetName="CheckBoxGlyph" Property="Stroke" Value="{DynamicResource CalendarAccentBrush}" />
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Style x:Key="MiniCalendarDayButtonStyle" TargetType="CalendarDayButton">

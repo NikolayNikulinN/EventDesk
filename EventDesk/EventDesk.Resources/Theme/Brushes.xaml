@@ -18,4 +18,5 @@
   <SolidColorBrush x:Key="MiniCalendarTodayBrush" Color="{DynamicResource MiniCalendarTodayColor}" />
   <SolidColorBrush x:Key="CalendarDisabledEventBrush" Color="{DynamicResource CalendarDisabledEventColor}" />
   <SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource CalendarErrorColor}" />
+  <SolidColorBrush x:Key="WarningBrush" Color="{DynamicResource CalendarWarningColor}" />
 </ResourceDictionary>

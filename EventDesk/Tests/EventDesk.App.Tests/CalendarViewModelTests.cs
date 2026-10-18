@@ -96,6 +96,89 @@ public sealed class CalendarViewModelTests
     }
 
     [Fact]
+    public async Task SaveEvent_OverlappingEvent_WarnsThenAllowsExplicitSave()
+    {
+        InMemoryEventClient client = new();
+        client.Events.Add(ExistingEvent("Existing meeting", DateTime.Today.AddHours(9), DateTime.Today.AddHours(10)));
+        ResourceWrapper resources = new();
+        CalendarViewModel viewModel = new(client, resources, new NullLogger());
+        viewModel.NewEventCommand.Execute(null);
+        viewModel.EventTitle = "Another meeting";
+        viewModel.EventDescription = "Reminder";
+        viewModel.StartTime = "09:30";
+        viewModel.EndTime = "10:30";
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.IsEditing);
+        Assert.Single(client.Events);
+        Assert.Contains("Existing meeting", viewModel.OverlapWarning);
+        Assert.Equal(resources.SaveAnyway, viewModel.SaveButtonLabel);
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.IsEditing);
+        Assert.Equal(2, client.Events.Count);
+    }
+
+    [Fact]
+    public async Task SaveEvent_ChangingTimeAfterWarning_RechecksOverlap()
+    {
+        InMemoryEventClient client = new();
+        client.Events.Add(ExistingEvent("Existing meeting", DateTime.Today.AddHours(9), DateTime.Today.AddHours(10)));
+        CalendarViewModel viewModel = new(client, new ResourceWrapper(), new NullLogger());
+        viewModel.NewEventCommand.Execute(null);
+        viewModel.EventTitle = "Another meeting";
+        viewModel.EventDescription = "Reminder";
+        viewModel.StartTime = "09:30";
+        viewModel.EndTime = "10:30";
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        viewModel.StartTime = "10:00";
+        viewModel.EndTime = "11:00";
+        Assert.Empty(viewModel.OverlapWarning);
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.IsEditing);
+        Assert.Equal(2, client.Events.Count);
+    }
+
+    [Fact]
+    public async Task SaveEvent_EditingSameEvent_DoesNotWarnAboutItself()
+    {
+        InMemoryEventClient client = new();
+        client.Events.Add(ExistingEvent("Existing meeting", DateTime.Today.AddHours(9), DateTime.Today.AddHours(10)));
+        CalendarViewModel viewModel = new(client, new ResourceWrapper(), new NullLogger());
+        await viewModel.RefreshCommand.ExecuteAsync(null);
+        viewModel.EditEventCommand.Execute(Assert.Single(viewModel.Days.SelectMany(day => day.Events)));
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.IsEditing);
+        Assert.Empty(viewModel.OverlapWarning);
+        Assert.Single(client.Events);
+    }
+
+    [Fact]
+    public async Task SaveEvent_MonthlyRecurrence_WarnsAboutExistingEventOnOccurrenceDate()
+    {
+        InMemoryEventClient client = new();
+        client.Events.Add(ExistingEvent("Existing meeting", DateTime.Today.AddHours(12), DateTime.Today.AddHours(13)));
+        CalendarViewModel viewModel = new(client, new ResourceWrapper(), new NullLogger());
+        viewModel.NewEventCommand.Execute(null);
+        viewModel.EventTitle = "Monthly event";
+        viewModel.EventDescription = "Reminder";
+        viewModel.SelectedRecurrence = viewModel.RecurrenceOptions.Single(option => option.Code == EventRecurrenceCode.Monthly);
+        viewModel.SelectedDayOfMonth = DateTime.Today.Day;
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.IsEditing);
+        Assert.Contains("Existing meeting", viewModel.OverlapWarning);
+        Assert.Single(client.Events);
+    }
+
+    [Fact]
     public void SaveEvent_RequiresTitleDescriptionAndDates_TracksSliderTime()
     {
         CalendarViewModel viewModel = new(new InMemoryEventClient(), new ResourceWrapper(), new NullLogger());
@@ -113,6 +196,43 @@ public sealed class CalendarViewModelTests
         viewModel.StartMinuteOfDay = 9 * 60 + 30;
         Assert.Equal("09:30", viewModel.StartTime);
         Assert.True(viewModel.SaveEventCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task RecurringEditor_SavesYearlessAndMonthlessSchedules()
+    {
+        InMemoryEventClient client = new();
+        CalendarViewModel yearly = new(client, new ResourceWrapper(), new NullLogger());
+        yearly.NewEventCommand.Execute(null);
+        yearly.EventTitle = "Birthday";
+        yearly.EventDescription = "Birthday notification";
+        yearly.SelectedRecurrence = yearly.RecurrenceOptions.Single(option => option.Code == EventRecurrenceCode.Yearly);
+        yearly.SelectedMonthOfYear = 2;
+        yearly.SelectedDayOfMonth = 29;
+
+        Assert.Equal("11:00, 14:00, 17:00", yearly.NotificationTimesPreview);
+        Assert.True(yearly.SaveEventCommand.CanExecute(null));
+        await yearly.SaveEventCommand.ExecuteAsync(null);
+        CalendarEventResponse birthday = Assert.Single(client.Events);
+        Assert.Equal(EventRecurrenceCode.Yearly, birthday.Recurrence);
+        Assert.Equal(2, birthday.RecurrenceMonth);
+        Assert.Equal(29, birthday.RecurrenceDay);
+        Assert.Equal(180, birthday.NotificationIntervalMinutes);
+        Assert.Equal(2, yearly.SelectedDate!.Value.Month);
+        Assert.Equal(29, yearly.SelectedDate.Value.Day);
+
+        CalendarViewModel monthly = new(client, new ResourceWrapper(), new NullLogger());
+        monthly.NewEventCommand.Execute(null);
+        monthly.EventTitle = "Month end";
+        monthly.EventDescription = "Month end notification";
+        monthly.SelectedRecurrence = monthly.RecurrenceOptions.Single(option => option.Code == EventRecurrenceCode.Monthly);
+        monthly.SelectedDayOfMonth = 31;
+        await monthly.SaveEventCommand.ExecuteAsync(null);
+        CalendarEventResponse monthEnd = Assert.Single(client.Events, item => item.Title == "Month end");
+        Assert.Equal(EventRecurrenceCode.Monthly, monthEnd.Recurrence);
+        Assert.Null(monthEnd.RecurrenceMonth);
+        Assert.Equal(31, monthEnd.RecurrenceDay);
+        Assert.Equal(31, monthly.SelectedDate!.Value.Day);
     }
 
     [Fact]
@@ -347,6 +467,12 @@ public sealed class CalendarViewModelTests
         }
     }
 
+    private static CalendarEventResponse ExistingEvent(string title, DateTime start, DateTime end) => new(
+        Guid.NewGuid(), title,
+        new DateTimeOffset(start, TimeZoneInfo.Local.GetUtcOffset(start)).ToUniversalTime(),
+        new DateTimeOffset(end, TimeZoneInfo.Local.GetUtcOffset(end)).ToUniversalTime(),
+        TimeZoneInfo.Local.Id, true, [], "Reminder", "#425EBA");
+
     private sealed class InMemoryEventClient : ICalendarEventClient
     {
         public List<CalendarEventResponse> Events { get; } = [];
@@ -388,7 +514,8 @@ public sealed class CalendarViewModelTests
 
         private static CalendarEventResponse ToResponse(Guid id, SaveEventDto source) => new(
             id, source.Title, source.StartsAt.ToUniversalTime(), source.EndsAt.ToUniversalTime(),
-            source.TimeZoneId, source.IsEnabled, source.Reminders, source.Description, source.ColorHex);
+            source.TimeZoneId, source.IsEnabled, source.Reminders, source.Description, source.ColorHex,
+            source.Recurrence, source.RecurrenceMonth, source.RecurrenceDay, source.NotificationIntervalMinutes);
     }
 
 

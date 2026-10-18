@@ -9,4 +9,8 @@ public sealed record CalendarEventResponse(
     bool IsEnabled,
     IReadOnlyList<ReminderRuleDto> Reminders,
     string? Description = null,
-    string? ColorHex = null);
+    string? ColorHex = null,
+    EventRecurrenceCode Recurrence = EventRecurrenceCode.None,
+    int? RecurrenceMonth = null,
+    int? RecurrenceDay = null,
+    int? NotificationIntervalMinutes = null);

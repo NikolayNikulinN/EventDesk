@@ -157,6 +157,24 @@
 	<data name="EventTitle" xml:space="preserve"><value>Title</value></data>
 	<data name="EventDescription" xml:space="preserve"><value>Description for notification</value></data>
 	<data name="EventColor" xml:space="preserve"><value>Event color</value></data>
+	<data name="EventRepeat" xml:space="preserve"><value>Repeat</value></data>
+	<data name="EventRepeatOnce" xml:space="preserve"><value>Does not repeat</value></data>
+	<data name="EventRepeatYearly" xml:space="preserve"><value>Every year</value></data>
+	<data name="EventRepeatMonthly" xml:space="preserve"><value>Every month</value></data>
+	<data name="MonthAndDay" xml:space="preserve"><value>Month and day (year is ignored)</value></data>
+	<data name="DayOfMonth" xml:space="preserve"><value>Day of month</value></data>
+	<data name="FirstNotification" xml:space="preserve"><value>First notification</value></data>
+	<data name="LastNotification" xml:space="preserve"><value>Last notification</value></data>
+	<data name="NotificationInterval" xml:space="preserve"><value>Repeat notifications every</value></data>
+	<data name="NotificationTimes" xml:space="preserve"><value>Notification times</value></data>
+	<data name="EveryThirtyMinutes" xml:space="preserve"><value>30 minutes</value></data>
+	<data name="EveryHour" xml:space="preserve"><value>1 hour</value></data>
+	<data name="EveryTwoHours" xml:space="preserve"><value>2 hours</value></data>
+	<data name="EveryThreeHours" xml:space="preserve"><value>3 hours</value></data>
+	<data name="EveryFourHours" xml:space="preserve"><value>4 hours</value></data>
+	<data name="EverySixHours" xml:space="preserve"><value>6 hours</value></data>
+	<data name="NotificationWindowInvalid" xml:space="preserve"><value>The last notification must be after the first and align with the interval.</value></data>
+	<data name="MissingDatesSkipped" xml:space="preserve"><value>Dates missing from a month or year are skipped.</value></data>
 	<data name="ColorBlue" xml:space="preserve"><value>Blue</value></data>
 	<data name="ColorGreen" xml:space="preserve"><value>Green</value></data>
 	<data name="ColorOrange" xml:space="preserve"><value>Orange</value></data>
@@ -174,6 +192,8 @@
 	<data name="ReminderOneHour" xml:space="preserve"><value>1 hour before</value></data>
 	<data name="EventEnabled" xml:space="preserve"><value>Event enabled</value></data>
 	<data name="SaveEvent" xml:space="preserve"><value>Save event</value></data>
+	<data name="SaveAnyway" xml:space="preserve"><value>Save anyway</value></data>
+	<data name="EventOverlapWarningFormat" xml:space="preserve"><value>Overlaps “{0}” on {1:d MMM yyyy} ({1:HH:mm}–{2:HH:mm}). Save anyway to keep both events.</value></data>
 	<data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
 	<data name="DeleteEvent" xml:space="preserve"><value>Delete event</value></data>
 	<data name="ConfirmDeleteEvent" xml:space="preserve"><value>Delete this event?</value></data>

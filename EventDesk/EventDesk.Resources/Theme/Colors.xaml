@@ -18,4 +18,5 @@
   <Color x:Key="MiniCalendarTodayColor">#FFD4E2FF</Color>
   <Color x:Key="CalendarDisabledEventColor">#FFEEF0F3</Color>
   <Color x:Key="CalendarErrorColor">#FFB42335</Color>
+  <Color x:Key="CalendarWarningColor">#FF9A6200</Color>
 </ResourceDictionary>

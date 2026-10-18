@@ -6,6 +6,8 @@ public static class DomainValidationMessages
     public const string EventTitleRequired = "An event title is required.";
     public const string EventDescriptionTooLong = "An event description cannot exceed 2000 characters.";
     public const string EventColorInvalid = "An event color must be a six-digit hex color.";
+    public const string EventRecurrenceInvalid = "The event recurrence settings are invalid.";
+    public const string EventNotificationWindowInvalid = "A recurring event needs a same-day notification window and an interval that reaches its end.";
     public const string EventEndMustFollowStart = "The event end must be after its start.";
     public const string TimeZoneRequired = "A time zone ID is required.";
     public const string TimeZoneNotFound = "The time zone ID is not available on this system.";

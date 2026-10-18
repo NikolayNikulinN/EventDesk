@@ -25,8 +25,10 @@
                    Text="{Binding EditorHeading}" />
       </DockPanel>
 
-      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+      <ScrollViewer Grid.Row="1"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="{StaticResource CalendarEditorScrollContentMargin}">
           <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EventTitle}" />
           <TextBox x:Name="EventTitleTextBox"
                    Style="{StaticResource CalendarEditorTextBoxStyle}"
@@ -41,13 +43,45 @@
                    MaxLength="2000"
                    Text="{Binding EventDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.StartDate}" />
-          <ui:CalendarDatePicker Style="{StaticResource CalendarEditorDatePickerStyle}"
-                                 Date="{Binding StartDate, Mode=TwoWay}"
-                                 AutomationProperties.Name="{Binding Resources.StartDate}"
-                                 Content="{Binding StartDate, StringFormat={}{0:d}}" />
+          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EventRepeat}" />
+          <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                    ItemsSource="{Binding RecurrenceOptions}"
+                    DisplayMemberPath="Label"
+                    SelectedItem="{Binding SelectedRecurrence, Mode=TwoWay}" />
 
-          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.StartTime}" />
+          <StackPanel Visibility="{Binding IsOneTimeEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.StartDate}" />
+            <ui:CalendarDatePicker Style="{StaticResource CalendarEditorDatePickerStyle}"
+                                   Date="{Binding StartDate, Mode=TwoWay}"
+                                   AutomationProperties.Name="{Binding Resources.StartDate}"
+                                   Content="{Binding StartDate, StringFormat={}{0:d}}" />
+          </StackPanel>
+
+          <StackPanel Visibility="{Binding IsYearlyEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.MonthAndDay}" />
+            <StackPanel Orientation="Horizontal">
+              <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                        Width="208"
+                        ItemsSource="{Binding MonthsOfYear}"
+                        DisplayMemberPath="Label"
+                        SelectedValuePath="Number"
+                        SelectedValue="{Binding SelectedMonthOfYear, Mode=TwoWay}" />
+              <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                        Width="84"
+                        Margin="8,0,0,0"
+                        ItemsSource="{Binding DaysOfMonth}"
+                        SelectedItem="{Binding SelectedDayOfMonth, Mode=TwoWay}" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Visibility="{Binding IsMonthlyEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.DayOfMonth}" />
+            <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                      ItemsSource="{Binding DaysOfMonth}"
+                      SelectedItem="{Binding SelectedDayOfMonth, Mode=TwoWay}" />
+          </StackPanel>
+
+          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding StartTimeLabel}" />
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
@@ -63,13 +97,15 @@
                        Text="{Binding StartTime}" />
           </Grid>
 
-          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EndDate}" />
-          <ui:CalendarDatePicker Style="{StaticResource CalendarEditorDatePickerStyle}"
-                                 Date="{Binding EndDate, Mode=TwoWay}"
-                                 AutomationProperties.Name="{Binding Resources.EndDate}"
-                                 Content="{Binding EndDate, StringFormat={}{0:d}}" />
+          <StackPanel Visibility="{Binding IsOneTimeEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EndDate}" />
+            <ui:CalendarDatePicker Style="{StaticResource CalendarEditorDatePickerStyle}"
+                                   Date="{Binding EndDate, Mode=TwoWay}"
+                                   AutomationProperties.Name="{Binding Resources.EndDate}"
+                                   Content="{Binding EndDate, StringFormat={}{0:d}}" />
+          </StackPanel>
 
-          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EndTime}" />
+          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding EndTimeLabel}" />
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
@@ -84,6 +120,25 @@
                        Style="{StaticResource CalendarEditorTimeValueStyle}"
                        Text="{Binding EndTime}" />
           </Grid>
+
+          <StackPanel Visibility="{Binding IsRecurringEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Foreground="{StaticResource MutedTextBrush}"
+                       TextWrapping="Wrap"
+                       Text="{Binding Resources.MissingDatesSkipped}" />
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.NotificationInterval}" />
+            <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                      ItemsSource="{Binding NotificationIntervalOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{Binding SelectedNotificationInterval, Mode=TwoWay}" />
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.NotificationTimes}" />
+            <TextBlock Style="{StaticResource CalendarEditorTimeValueStyle}"
+                       TextAlignment="Left"
+                       TextWrapping="Wrap"
+                       Text="{Binding NotificationTimesPreview}" />
+            <TextBlock Foreground="{StaticResource ErrorBrush}"
+                       TextWrapping="Wrap"
+                       Text="{Binding NotificationWindowError}" />
+          </StackPanel>
 
           <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.EventColor}" />
           <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
@@ -100,11 +155,13 @@
             </ComboBox.ItemTemplate>
           </ComboBox>
 
-          <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.Reminder}" />
-          <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
-                    ItemsSource="{Binding ReminderOptions}"
-                    DisplayMemberPath="Label"
-                    SelectedItem="{Binding SelectedReminder, Mode=TwoWay}" />
+          <StackPanel Visibility="{Binding IsOneTimeEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{StaticResource CalendarFieldLabelStyle}" Text="{Binding Resources.Reminder}" />
+            <ComboBox Style="{StaticResource CalendarEditorComboBoxStyle}"
+                      ItemsSource="{Binding ReminderOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{Binding SelectedReminder, Mode=TwoWay}" />
+          </StackPanel>
 
           <CheckBox Margin="{StaticResource CalendarEditorFieldMargin}"
                     Style="{StaticResource CalendarEditorCheckBoxStyle}"
@@ -114,6 +171,9 @@
       </ScrollViewer>
 
       <StackPanel Grid.Row="2" Margin="{StaticResource CalendarEditorFieldMargin}">
+        <TextBlock Foreground="{StaticResource WarningBrush}"
+                   Text="{Binding OverlapWarning}"
+                   TextWrapping="Wrap" />
         <TextBlock Foreground="{StaticResource ErrorBrush}"
                    Text="{Binding EditorError}"
                    TextWrapping="Wrap" />
@@ -122,7 +182,7 @@
                    Visibility="{Binding IsSaving, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <Button Style="{StaticResource CalendarPrimaryButtonStyle}"
-                Content="{Binding Resources.SaveEvent}"
+                Content="{Binding SaveButtonLabel}"
                 Command="{Binding SaveEventCommand}" />
 
         <StackPanel Visibility="{Binding CanDeleteEvent, Converter={StaticResource BooleanToVisibilityConverter}}">

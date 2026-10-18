@@ -43,6 +43,42 @@ public interface IResourceWrapper
 
     string EventColor { get; }
 
+    string EventRepeat { get; }
+
+    string EventRepeatOnce { get; }
+
+    string EventRepeatYearly { get; }
+
+    string EventRepeatMonthly { get; }
+
+    string MonthAndDay { get; }
+
+    string DayOfMonth { get; }
+
+    string FirstNotification { get; }
+
+    string LastNotification { get; }
+
+    string NotificationInterval { get; }
+
+    string NotificationTimes { get; }
+
+    string EveryThirtyMinutes { get; }
+
+    string EveryHour { get; }
+
+    string EveryTwoHours { get; }
+
+    string EveryThreeHours { get; }
+
+    string EveryFourHours { get; }
+
+    string EverySixHours { get; }
+
+    string NotificationWindowInvalid { get; }
+
+    string MissingDatesSkipped { get; }
+
     string ColorBlue { get; }
 
     string ColorGreen { get; }
@@ -76,6 +112,10 @@ public interface IResourceWrapper
     string EventEnabled { get; }
 
     string SaveEvent { get; }
+
+    string SaveAnyway { get; }
+
+    string EventOverlapWarningFormat { get; }
 
     string Cancel { get; }
 

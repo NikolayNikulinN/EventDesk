@@ -4,7 +4,7 @@ The initial SQLite schema has two application tables:
 
 | Table | Purpose | Key fields |
 | --- | --- | --- |
-| `CalendarEvents` | Events, including disabled and soft-deleted events | `Id` (GUID primary key), `Title`, `StartsAtUtcTicks`, `EndsAtUtcTicks`, `TimeZoneId`, `IsEnabled`, `IsDeleted` |
+| `CalendarEvents` | Events, including disabled and soft-deleted events | `Id` (GUID primary key), `Title`, `StartsAtUtcTicks`, `EndsAtUtcTicks`, `TimeZoneId`, `IsEnabled`, `IsDeleted`, `RecurrenceKind`, `RecurrenceMonth`, `RecurrenceDay`, `NotificationIntervalMinutes` |
 | `ReminderRules` | Reminder schedules attached to events | `Id` (GUID primary key), `EventId` (foreign key), `LeadTimeTicks`, `Channel`, `OccurrenceCount`, `RepeatIntervalTicks` |
 
 One event has zero or more reminder rules. `ReminderRules.EventId` references
@@ -13,6 +13,10 @@ deleted and keeps its rules for future history. A physical database deletion
 cascades to reminder rules. Indexes on the deletion flag and event boundaries
 support period queries. A period query uses half-open intervals: an event is
 returned when `StartsAtUtc < periodEnd` and `EndsAtUtc > periodStart`.
+Recurring events are expanded in the service by their month/day or day-of-month
+pattern. Dates absent from a year or month are skipped. The recurrence columns
+are added by the `AddEventRecurrence` migration and have nullable pattern fields
+for existing single events.
 
 EF Core also creates `__EFMigrationsHistory` and its migration lock table.
 Notification delivery history is deferred until reminder delivery is added.
