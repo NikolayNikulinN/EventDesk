@@ -1,6 +1,10 @@
 using EventDesk.Application.Abstractions.Persistence;
+using EventDesk.Application.Reminders;
 using EventDesk.Infrastructure.Persistence;
 using EventDesk.Infrastructure.Persistence.Repositories;
+using EventDesk.Infrastructure.Notifications;
+using EventDesk.Ipc.Abstractions;
+using EventDesk.Ipc.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +28,9 @@ public static class DependencyInjection
         });
         services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IReminderStore, ReminderStore>();
+        services.AddSingleton<IDesktopReminderClient, NamedPipeDesktopReminderClient>();
+        services.AddSingleton<IReminderDispatcher, ReminderDispatcher>();
         return services;
     }
 }

@@ -3,6 +3,7 @@ namespace EventDesk.Constants;
 public static class IpcConstants
 {
     public const string PipeName = "EventDesk.Pipe";
+    public const string ReminderPipeName = "EventDesk.Reminders";
     public const string LocalServerName = ".";
     public const string EmptyPipeMessage = "The pipe message was empty.";
     public const string InvalidPipeMessageLength = "The pipe message length is invalid.";

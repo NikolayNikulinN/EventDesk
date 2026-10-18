@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EventDesk.Domain\EventDesk.Domain.csproj" />
     <ProjectReference Include="..\EventDesk.Constants\EventDesk.Constants.csproj" />
+    <ProjectReference Include="..\EventDesk.Logger\EventDesk.Logger.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>

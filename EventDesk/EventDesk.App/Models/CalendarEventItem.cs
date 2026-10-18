@@ -28,7 +28,7 @@ public sealed class CalendarEventItem
 
     public string Title { get; }
 
-    public Brush ColorBrush { get; }
+    public System.Windows.Media.Brush ColorBrush { get; }
 
     public string TimeRange { get; }
 

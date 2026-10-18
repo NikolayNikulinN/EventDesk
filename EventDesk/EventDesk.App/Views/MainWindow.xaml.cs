@@ -1,4 +1,5 @@
 using System.Windows;
+using System.ComponentModel;
 using EventDesk.App.ViewModels;
 using Wpf.Ui;
 
@@ -7,6 +8,7 @@ namespace EventDesk.App.Views;
 public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel viewModel;
+    private bool exiting;
 
     public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService)
     {
@@ -31,6 +33,19 @@ public partial class MainWindow : Window
                                                                                  WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
     private void CloseButtonClick(object sender, RoutedEventArgs e) => Close();
+
+    public void PrepareForExit() => exiting = true;
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        if (!exiting)
+        {
+            e.Cancel = true;
+            Hide();
+        }
+
+        base.OnClosing(e);
+    }
 
     private void WindowStateChanged(object sender, EventArgs e) => viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
 }

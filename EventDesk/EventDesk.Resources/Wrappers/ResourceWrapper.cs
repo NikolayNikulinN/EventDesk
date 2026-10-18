@@ -8,8 +8,16 @@ namespace EventDesk.Resources.Wrappers;
 public sealed class ResourceWrapper : IResourceWrapper
 {
     private const string ImagePath = "/EventDesk.Resources;component/Images/";
+    private const string IconPath = "/EventDesk.Resources;component/Icons/";
 
     public string AppTitle => GetString(nameof(AppTitle));
+    public string TrayTooltip => GetString(nameof(TrayTooltip));
+    public string OpenApplication => GetString(nameof(OpenApplication));
+    public string ExitApplication => GetString(nameof(ExitApplication));
+    public string ReminderNotificationTitle => GetString(nameof(ReminderNotificationTitle));
+    public string AppTrayIconPath => $"{IconPath}appTrayIcon.ico";
+    public string TrayOpenIconPath => $"{IconPath}trayOpen.ico";
+    public string TrayExitIconPath => $"{IconPath}trayExit.ico";
 
     public string MinimizeToolTip => GetString(nameof(MinimizeToolTip));
 
@@ -96,6 +104,18 @@ public sealed class ResourceWrapper : IResourceWrapper
     public string ApplyingEventChanges => GetString(nameof(ApplyingEventChanges));
 
     public string History => GetString(nameof(History));
+    public string HistoryEmpty => GetString(nameof(HistoryEmpty));
+    public string HistoryLoading => GetString(nameof(HistoryLoading));
+    public string HistoryLoadFailed => GetString(nameof(HistoryLoadFailed));
+    public string HistoryDueFormat => GetString(nameof(HistoryDueFormat));
+    public string HistoryAttemptsFormat => GetString(nameof(HistoryAttemptsFormat));
+    public string HistoryChannelDesktop => GetString(nameof(HistoryChannelDesktop));
+    public string HistoryChannelEmail => GetString(nameof(HistoryChannelEmail));
+    public string HistoryStatusPending => GetString(nameof(HistoryStatusPending));
+    public string HistoryStatusDelivering => GetString(nameof(HistoryStatusDelivering));
+    public string HistoryStatusDelivered => GetString(nameof(HistoryStatusDelivered));
+    public string HistoryStatusFailed => GetString(nameof(HistoryStatusFailed));
+    public string HistoryStatusCanceled => GetString(nameof(HistoryStatusCanceled));
 
     public string Settings => GetString(nameof(Settings));
 

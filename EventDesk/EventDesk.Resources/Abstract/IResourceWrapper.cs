@@ -4,6 +4,13 @@ namespace EventDesk.Resources.Abstract;
 public interface IResourceWrapper
 {
     string AppTitle { get; }
+    string TrayTooltip { get; }
+    string OpenApplication { get; }
+    string ExitApplication { get; }
+    string ReminderNotificationTitle { get; }
+    string AppTrayIconPath { get; }
+    string TrayOpenIconPath { get; }
+    string TrayExitIconPath { get; }
 
     string MinimizeToolTip { get; }
 
@@ -150,6 +157,18 @@ public interface IResourceWrapper
     string ApplyingEventChanges { get; }
 
     string History { get; }
+    string HistoryEmpty { get; }
+    string HistoryLoading { get; }
+    string HistoryLoadFailed { get; }
+    string HistoryDueFormat { get; }
+    string HistoryAttemptsFormat { get; }
+    string HistoryChannelDesktop { get; }
+    string HistoryChannelEmail { get; }
+    string HistoryStatusPending { get; }
+    string HistoryStatusDelivering { get; }
+    string HistoryStatusDelivered { get; }
+    string HistoryStatusFailed { get; }
+    string HistoryStatusCanceled { get; }
 
     string Settings { get; }
 

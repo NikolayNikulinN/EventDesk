@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <Resource Include="Images\*.png" />
+    <Resource Include="Icons\appTrayIcon.ico" />
+    <Resource Include="Icons\trayOpen.ico" />
+    <Resource Include="Icons\trayExit.ico" />
     <Folder Include="Icons\" />
   </ItemGroup>
 

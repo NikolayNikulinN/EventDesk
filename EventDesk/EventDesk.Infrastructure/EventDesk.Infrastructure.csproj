@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\EventDesk.Application\EventDesk.Application.csproj" />
+    <ProjectReference Include="..\EventDesk.Ipc\EventDesk.Ipc.csproj" />
     <ProjectReference Include="..\EventDesk.Domain\EventDesk.Domain.csproj" />
     <ProjectReference Include="..\EventDesk.Constants\EventDesk.Constants.csproj" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
