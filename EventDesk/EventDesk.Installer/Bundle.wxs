@@ -2,7 +2,7 @@
      xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
   <Bundle Name="EventDesk"
           Manufacturer="dLiX Software"
-          Version="0.1.0"
+          Version="$(var.EventDeskVersion)"
           UpgradeCode="28E89F4C-1A91-4672-A48C-40B704ED5693"
           IconSourceFile="..\EventDesk.Resources\Icons\appTrayIcon.ico">
     <BootstrapperApplication>

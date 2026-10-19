@@ -1,16 +1,46 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Name="EventDesk Skeleton"
-           Manufacturer="EventDesk"
-           Version="0.1.0"
+  <Package Name="EventDesk"
+           Manufacturer="dLiX Software"
+           Version="$(var.EventDeskVersion)"
            UpgradeCode="9CCF8D21-24E8-4A21-847D-4B6A0A246B59"
            Scope="perMachine">
+    <MajorUpgrade Schedule="afterInstallInitialize"
+                  DowngradeErrorMessage="!(loc.DowngradeError)" />
+
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="EventDesk">
-        <Component Id="InstallFolder" Guid="8B596A61-3F0E-4522-A7A2-B304E0A9DFF1">
-          <CreateFolder />
-        </Component>
+        <Directory Id="APPFOLDER" Name="App">
+          <Component Id="EventDeskAppExecutable" Guid="A64675AB-8AE8-48A5-BB3D-439AAB315AD8">
+            <File Id="EventDeskAppFile" Source="$(var.AppPublishDir)\EventDesk.exe" KeyPath="yes">
+              <Shortcut Id="EventDeskStartMenuShortcut" Directory="ProgramMenuFolder"
+                        Name="EventDesk" WorkingDirectory="APPFOLDER" Advertise="yes" />
+              <Shortcut Id="EventDeskDesktopShortcut" Directory="DesktopFolder"
+                        Name="EventDesk" WorkingDirectory="APPFOLDER" Advertise="yes" />
+              <Shortcut Id="EventDeskStartupShortcut" Directory="StartupFolder"
+                        Name="EventDesk" Arguments="--background" WorkingDirectory="APPFOLDER"
+                        Advertise="yes" />
+            </File>
+          </Component>
+        </Directory>
+        <Directory Id="SERVICEFOLDER" Name="Service">
+          <Component Id="EventDeskServiceExecutable" Guid="E2A816D0-40BD-4220-B56A-86505BC2B4E2">
+            <File Id="EventDeskServiceFile" Source="$(var.ServicePublishDir)\EventDesk.Service.exe" KeyPath="yes" />
+            <ServiceInstall Id="EventDeskServiceInstall" Name="EventDesk.Service"
+                            DisplayName="EventDesk Service"
+                            Description="!(loc.ServiceDescription)"
+                            Type="ownProcess" Start="auto" ErrorControl="normal" />
+            <ServiceControl Id="EventDeskServiceControl" Name="EventDesk.Service"
+                            Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+          </Component>
+          <Component Id="EventDeskSqliteNative" Guid="5AF13AD2-5DE1-45A8-90A4-5532F6E67B27">
+            <File Id="EventDeskSqliteNativeFile"
+                  Source="$(var.ServicePublishDir)\e_sqlite3.dll"
+                  DefaultLanguage="0" KeyPath="yes" />
+          </Component>
+        </Directory>
       </Directory>
     </StandardDirectory>
+
     <StandardDirectory Id="CommonAppDataFolder">
       <Directory Id="EVENTDESKDATAROOT" Name="EventDesk">
         <Directory Id="EVENTDESKDATADIR" Name="Data">
@@ -19,21 +49,24 @@
               <PermissionEx Sddl="D:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)" />
             </CreateFolder>
           </Component>
-          <Component Id="EventDeskInitialDatabase" Guid="*" Permanent="yes" NeverOverwrite="yes">
-            <File Id="EventDeskDatabaseFile"
-                  Source="$(sys.SOURCEFILEDIR)..\DataBase\EventDesk.db"
-                  Name="EventDesk.db"
-                  KeyPath="yes">
-              <PermissionEx Sddl="D:P(A;;FA;;;SY)(A;;FA;;;BA)" />
-            </File>
-          </Component>
         </Directory>
       </Directory>
     </StandardDirectory>
+
     <Feature Id="MainFeature" Title="EventDesk" Level="1">
-      <ComponentRef Id="InstallFolder" />
+      <ComponentRef Id="EventDeskAppExecutable" />
+      <ComponentRef Id="EventDeskServiceExecutable" />
+      <ComponentRef Id="EventDeskSqliteNative" />
       <ComponentRef Id="EventDeskDataDirectory" />
-      <ComponentRef Id="EventDeskInitialDatabase" />
+      <Files Directory="APPFOLDER" Include="$(var.AppPublishDir)\**">
+        <Exclude Files="$(var.AppPublishDir)\EventDesk.exe" />
+        <Exclude Files="$(var.AppPublishDir)\**\*.pdb" />
+      </Files>
+      <Files Directory="SERVICEFOLDER" Include="$(var.ServicePublishDir)\**">
+        <Exclude Files="$(var.ServicePublishDir)\EventDesk.Service.exe" />
+        <Exclude Files="$(var.ServicePublishDir)\e_sqlite3.dll" />
+        <Exclude Files="$(var.ServicePublishDir)\**\*.pdb" />
+      </Files>
     </Feature>
   </Package>
 </Wix>

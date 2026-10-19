@@ -2,13 +2,16 @@
   <PropertyGroup>
     <OutputType>Bundle</OutputType>
     <Platforms>x64</Platforms>
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputPath>bin\$(Configuration)\x64\</OutputPath>
+    <EventDeskVersion Condition="'$(EventDeskVersion)' == ''">0.2.0</EventDeskVersion>
+    <DefineConstants>$(DefineConstants);EventDeskVersion=$(EventDeskVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="**/*.wxs" />
     <Compile Include="Bundle.wxs" />
     <PackageReference Include="WixToolset.BootstrapperApplications.wixext" />
-    <ProjectReference Include="Package\EventDesk.Installer.Package.wixproj" />
+    <ProjectReference Include="Package\EventDesk.Installer.Package.wixproj" SetPlatform="Platform=x64" />
   </ItemGroup>
   <Target Name="GenerateInstallerLocalization" BeforeTargets="CoreCompile">
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\GenerateInstallerLocalization.ps1&quot; -ResourceFile &quot;$(MSBuildProjectDirectory)\..\EventDesk.Resources\Resources\AppResource.resx&quot; -OutputFile &quot;$(MSBuildProjectDirectory)\obj\InstallerTheme.en-us.wxl&quot;" />

@@ -28,7 +28,7 @@ public sealed class TrayNotificationService(
         exitMenuIcon = LoadMenuIcon(resources.TrayExitIconPath);
 
         Forms.ContextMenuStrip menu = new();
-        menu.Items.Add(resources.OpenApplication, openMenuIcon, (_, _) => RestoreWindow());
+        menu.Items.Add(resources.OpenApplication, openMenuIcon, (_, _) => OpenWindow());
         menu.Items.Add(resources.ExitApplication, exitMenuIcon, (_, _) =>
             System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -44,9 +44,9 @@ public sealed class TrayNotificationService(
         };
         notifyIcon.MouseClick += (_, args) =>
         {
-            if (args.Button == Forms.MouseButtons.Left) RestoreWindow();
+            if (args.Button == Forms.MouseButtons.Left) OpenWindow();
         };
-        notifyIcon.BalloonTipClicked += (_, _) => RestoreWindow();
+        notifyIcon.BalloonTipClicked += (_, _) => OpenWindow();
     }
 
     public async Task ShowAsync(DesktopReminderMessage message, CancellationToken cancellationToken)
@@ -101,7 +101,7 @@ public sealed class TrayNotificationService(
         return new Bitmap(source, Forms.SystemInformation.SmallIconSize);
     }
 
-    private void RestoreWindow() => System.Windows.Application.Current.Dispatcher.Invoke(() =>
+    public void OpenWindow() => System.Windows.Application.Current.Dispatcher.Invoke(() =>
     {
         if (!mainWindow.IsVisible) mainWindow.Show();
         if (mainWindow.WindowState == System.Windows.WindowState.Minimized)

@@ -321,4 +321,6 @@
 	<data name="InstallerFilesInUseRetryButton" xml:space="preserve"><value>Retry</value></data>
 	<data name="InstallerFilesInUseIgnoreButton" xml:space="preserve"><value>Ignore</value></data>
 	<data name="InstallerFilesInUseExitButton" xml:space="preserve"><value>Exit</value></data>
+	<data name="InstallerDowngradeError" xml:space="preserve"><value>A newer version of EventDesk is already installed.</value></data>
+	<data name="InstallerServiceDescription" xml:space="preserve"><value>Processes EventDesk reminders and email delivery.</value></data>
 </root>

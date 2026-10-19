@@ -1,6 +1,8 @@
 # EventDesk
 
-EventDesk is a Windows desktop calendar and reminder application. It includes a weekly calendar UI, event persistence in SQLite, named-pipe communication between the WPF app and the service, and desktop and email reminder delivery. The installer payload is planned for a later task.
+EventDesk is a Windows desktop calendar and reminder application. It includes a weekly calendar UI, event persistence in SQLite, named-pipe communication between the WPF app and the service, and desktop and email reminder delivery.
+
+For installation and everyday use, see the [user guide](Docs/user-guide.md).
 
 The event and reminder invariants, including daylight-saving rules, are documented in [the event model](Docs/event-model.md).
 
@@ -49,5 +51,14 @@ dotnet run --project EventDesk.App
 
 The service owns the database under `%ProgramData%\EventDesk\Data\EventDesk.db`; the desktop app only communicates through the named pipe. The service account needs write access to that directory.
 
-The installer is a placeholder package. It does not yet install or configure the application or service.
-WiX Toolset 7 requires its EULA to be accepted by the developer before the installer project can be built. The WiX project is included in the solution but is not part of the default solution build configuration.
+## Installer
+
+The x64 WiX bundle publishes both executables as self-contained .NET 9 applications, then packages them in a per-machine MSI. Build it on Windows with the .NET 9 SDK:
+
+```powershell
+dotnet build EventDesk.Installer/EventDesk.Installer.wixproj -c Release -p:Platform=x64 -p:EventDeskVersion=0.2.0
+```
+
+The output is under `EventDesk.Installer/bin/Release/x64/`. Increment `EventDeskVersion` (the first three numeric fields) for every release so the new MSI can replace the previous one. The bundle and MSI use the same version property. WiX Toolset 7 requires the builder to review its [OSMF terms and EULA](https://docs.firegiant.com/wix/osmf/) and accept them locally before building. This repository does not accept the agreement on a builder's behalf.
+
+The installer registers `EventDesk.Service` to start automatically, creates Start menu and desktop shortcuts, and starts the desktop app in the tray at user logon. It leaves `%ProgramData%\EventDesk\Data` in place on upgrade or removal. The service creates and migrates the SQLite database at startup. See [release verification](Docs/release-verification.md) for clean install, upgrade, and removal checks.
