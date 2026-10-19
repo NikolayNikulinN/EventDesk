@@ -4,7 +4,7 @@
           Manufacturer="dLiX Software"
           Version="$(var.EventDeskVersion)"
           UpgradeCode="28E89F4C-1A91-4672-A48C-40B704ED5693"
-          IconSourceFile="..\EventDesk.Resources\Icons\appTrayIcon.ico">
+          IconSourceFile="..\EventDesk.Resources\Icons\appIcon.ico">
     <BootstrapperApplication>
       <bal:WixStandardBootstrapperApplication
           Theme="hyperlinkLicense"
@@ -22,8 +22,8 @@
                SourceFile="..\EventDesk.Resources\Images\installerButtonHover.png" />
       <Payload Name="installerButtonPressed.png"
                SourceFile="..\EventDesk.Resources\Images\installerButtonPressed.png" />
-      <Payload Name="appTrayIcon.ico"
-               SourceFile="..\EventDesk.Resources\Icons\appTrayIcon.ico" />
+      <Payload Name="appIcon.ico"
+               SourceFile="..\EventDesk.Resources\Icons\appIcon.ico" />
     </BootstrapperApplication>
 
     <Chain>

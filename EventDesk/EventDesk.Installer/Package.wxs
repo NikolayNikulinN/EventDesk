@@ -6,6 +6,8 @@
            Scope="perMachine">
     <MajorUpgrade Schedule="afterInstallInitialize"
                   DowngradeErrorMessage="!(loc.DowngradeError)" />
+    <Icon Id="EventDeskApp.ico" SourceFile="..\..\EventDesk.Resources\Icons\appIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="EventDeskApp.ico" />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="EventDesk">
@@ -13,12 +15,12 @@
           <Component Id="EventDeskAppExecutable" Guid="A64675AB-8AE8-48A5-BB3D-439AAB315AD8">
             <File Id="EventDeskAppFile" Source="$(var.AppPublishDir)\EventDesk.exe" KeyPath="yes">
               <Shortcut Id="EventDeskStartMenuShortcut" Directory="ProgramMenuFolder"
-                        Name="EventDesk" WorkingDirectory="APPFOLDER" Advertise="yes" />
+                        Name="EventDesk" WorkingDirectory="APPFOLDER" Icon="EventDeskApp.ico" Advertise="yes" />
               <Shortcut Id="EventDeskDesktopShortcut" Directory="DesktopFolder"
-                        Name="EventDesk" WorkingDirectory="APPFOLDER" Advertise="yes" />
+                        Name="EventDesk" WorkingDirectory="APPFOLDER" Icon="EventDeskApp.ico" Advertise="yes" />
               <Shortcut Id="EventDeskStartupShortcut" Directory="StartupFolder"
                         Name="EventDesk" Arguments="--background" WorkingDirectory="APPFOLDER"
-                        Advertise="yes" />
+                        Icon="EventDeskApp.ico" Advertise="yes" />
             </File>
           </Component>
         </Directory>

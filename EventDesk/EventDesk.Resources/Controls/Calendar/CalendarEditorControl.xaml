@@ -191,21 +191,26 @@
                 Command="{Binding SaveEventCommand}" />
 
         <StackPanel Visibility="{Binding CanDeleteEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
-          <Button Style="{StaticResource CalendarDeleteButtonStyle}"
+          <Button Style="{StaticResource CalendarDeleteRequestButtonStyle}"
                   Content="{Binding Resources.DeleteEvent}"
                   Command="{Binding RequestDeleteCommand}"
                   Visibility="{Binding IsDeleteConfirmationVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
           <StackPanel Visibility="{Binding IsDeleteConfirmationVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Margin="{StaticResource CalendarEditorFieldMargin}"
+            <TextBlock Style="{StaticResource CalendarDeleteConfirmationTextStyle}"
                        Text="{Binding Resources.ConfirmDeleteEvent}" />
-            <StackPanel Orientation="Horizontal">
-              <Button Style="{StaticResource CalendarDeleteButtonStyle}"
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Button Grid.Column="0" Style="{StaticResource CalendarDeleteButtonStyle}"
                       Content="{Binding Resources.DeleteEvent}"
                       Command="{Binding DeleteEventCommand}" />
-              <Button Style="{StaticResource CalendarToolbarButtonStyle}"
+              <Button Grid.Column="2" Style="{StaticResource CalendarConfirmationCancelButtonStyle}"
                       Content="{Binding Resources.Cancel}"
                       Command="{Binding CancelDeleteCommand}" />
-            </StackPanel>
+            </Grid>
           </StackPanel>
         </StackPanel>
       </StackPanel>
