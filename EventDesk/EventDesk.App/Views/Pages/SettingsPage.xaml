@@ -1,7 +1,9 @@
 <Page x:Class="EventDesk.App.Views.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Style="{StaticResource ShellPageStyle}">
+      Style="{StaticResource ShellPageStyle}"
+      Loaded="PageLoaded"
+      Unloaded="PageUnloaded">
   <Grid Margin="{StaticResource ShellPadding}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -123,43 +125,5 @@
       </StackPanel>
     </ScrollViewer>
 
-    <Grid Grid.RowSpan="2" Style="{StaticResource SettingsEditorOverlayStyle}">
-      <Border Style="{StaticResource SettingsDialogStyle}">
-        <StackPanel>
-          <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding RecipientDialogTitle}" />
-          <TextBlock Style="{StaticResource SettingsDialogLabelStyle}" Text="{Binding Resources.EmailRecipientAddress}" />
-          <Grid>
-            <TextBox Style="{StaticResource SettingsTextBoxStyle}" MaxLength="320"
-                     Text="{Binding RecipientDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
-                       Text="{Binding Resources.EmailRecipientExample}"
-                       Visibility="{Binding IsRecipientWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
-          </Grid>
-          <TextBlock Style="{StaticResource SettingsRecipientValidationMessageStyle}"
-                     Text="{Binding RecipientDraftError}" />
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
-            <Button Style="{StaticResource SettingsSecondaryButtonStyle}" Content="{Binding Resources.Cancel}"
-                    Command="{Binding CancelRecipientCommand}" />
-            <Button Style="{StaticResource SettingsActionButtonStyle}" Content="{Binding Resources.SaveRecipient}"
-                    Command="{Binding SaveRecipientCommand}" IsEnabled="{Binding CanSaveRecipient}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
-    </Grid>
-
-    <Grid Grid.RowSpan="2" Style="{StaticResource SettingsDeleteOverlayStyle}">
-      <Border Style="{StaticResource SettingsDialogStyle}">
-        <StackPanel>
-          <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding Resources.ConfirmDeleteRecipient}" />
-          <TextBlock Style="{StaticResource SettingsHintStyle}" Text="{Binding DeletingRecipient}" TextWrapping="Wrap" />
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
-            <Button Style="{StaticResource SettingsSecondaryButtonStyle}" Content="{Binding Resources.Cancel}"
-                    Command="{Binding CancelDeleteRecipientCommand}" />
-            <Button Style="{StaticResource SettingsDangerButtonStyle}" Content="{Binding Resources.DeleteRecipient}"
-                    Command="{Binding ConfirmDeleteRecipientCommand}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
-    </Grid>
   </Grid>
 </Page>

@@ -18,6 +18,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Service", "EventDesk.Service\EventDesk.Service.csproj", "{5646DD68-3A8F-41C3-AB56-EB15922B145A}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "EventDesk.Installer", "EventDesk.Installer\EventDesk.Installer.wixproj", "{505BCFF6-497C-4BA1-B1BB-507419507D48}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA} = {C5913511-9CB6-4B78-952B-1CDE177FE3EA}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{345DA1F0-E661-462C-A4D8-7B043ABE509E}"
 EndProject
@@ -27,6 +30,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{34D21DC3-0
 		Docs\event-model.md = Docs\event-model.md
 		Docs\ipc.md = Docs\ipc.md
 		Docs\ProjectArchitecture.docx = Docs\ProjectArchitecture.docx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Screens", "Screens", "{8B71C2EF-9150-4A64-86DE-17D13FE47B5A}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Screens\addEventPage.png = Docs\Screens\addEventPage.png
+		Docs\Screens\editEventPage.png = Docs\Screens\editEventPage.png
+		Docs\Screens\mainPage.png = Docs\Screens\mainPage.png
+		Docs\Screens\settingsPage.png = Docs\Screens\settingsPage.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataBase", "DataBase", "{7E7C6058-28B9-4B1D-96BE-05F55B520D84}"
@@ -49,6 +60,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.Ipc.Tests", "Tests\EventDesk.Ipc.Tests\EventDesk.Ipc.Tests.csproj", "{663845EA-387B-482A-93AE-C34D63A7A443}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDesk.App.Tests", "Tests\EventDesk.App.Tests\EventDesk.App.Tests.csproj", "{329DAB37-A325-4E46-93D4-24F2B2561745}"
+EndProject
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "EventDesk.Installer.Package", "EventDesk.Installer\Package\EventDesk.Installer.Package.wixproj", "{C5913511-9CB6-4B78-952B-1CDE177FE3EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B71C7FFC-F719-476F-A886-E4AA86FC71AF} = {B71C7FFC-F719-476F-A886-E4AA86FC71AF}
+		{5646DD68-3A8F-41C3-AB56-EB15922B145A} = {5646DD68-3A8F-41C3-AB56-EB15922B145A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,10 +162,12 @@ Global
 		{5646DD68-3A8F-41C3-AB56-EB15922B145A}.Release|x86.ActiveCfg = Release|Any CPU
 		{5646DD68-3A8F-41C3-AB56-EB15922B145A}.Release|x86.Build.0 = Release|Any CPU
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Debug|Any CPU.Build.0 = Debug|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Debug|x64.ActiveCfg = Debug|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Debug|x64.Build.0 = Debug|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Debug|x86.ActiveCfg = Debug|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Release|Any CPU.ActiveCfg = Release|x64
+		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Release|Any CPU.Build.0 = Release|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Release|x64.ActiveCfg = Release|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Release|x64.Build.0 = Release|x64
 		{505BCFF6-497C-4BA1-B1BB-507419507D48}.Release|x86.ActiveCfg = Release|x64
@@ -248,11 +267,22 @@ Global
 		{329DAB37-A325-4E46-93D4-24F2B2561745}.Release|x64.Build.0 = Release|Any CPU
 		{329DAB37-A325-4E46-93D4-24F2B2561745}.Release|x86.ActiveCfg = Release|Any CPU
 		{329DAB37-A325-4E46-93D4-24F2B2561745}.Release|x86.Build.0 = Release|Any CPU
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Debug|Any CPU.Build.0 = Debug|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Debug|x64.ActiveCfg = Debug|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Debug|x64.Build.0 = Debug|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Debug|x86.ActiveCfg = Debug|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Release|Any CPU.ActiveCfg = Release|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Release|Any CPU.Build.0 = Release|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Release|x64.ActiveCfg = Release|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Release|x64.Build.0 = Release|x64
+		{C5913511-9CB6-4B78-952B-1CDE177FE3EA}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8B71C2EF-9150-4A64-86DE-17D13FE47B5A} = {34D21DC3-0EB5-48E8-81A5-E50811E2630C}
 		{7B668730-D953-4F0D-95F3-3096AEAEFCED} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
 		{FDAB1FE2-AFDA-408E-A27F-A02931BE2F8D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}
 		{F7C1AB73-8432-435E-95B3-6CD4743F3D5D} = {345DA1F0-E661-462C-A4D8-7B043ABE509E}

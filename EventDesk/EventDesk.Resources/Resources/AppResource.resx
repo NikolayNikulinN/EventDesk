@@ -179,7 +179,7 @@
 	<data name="EveryThreeHours" xml:space="preserve"><value>3 hours</value></data>
 	<data name="EveryFourHours" xml:space="preserve"><value>4 hours</value></data>
 	<data name="EverySixHours" xml:space="preserve"><value>6 hours</value></data>
-	<data name="NotificationWindowInvalid" xml:space="preserve"><value>The last notification must be after the first and align with the interval.</value></data>
+	<data name="NotificationWindowInvalid" xml:space="preserve"><value>The last notification must be after the first.</value></data>
 	<data name="MissingDatesSkipped" xml:space="preserve"><value>Dates missing from a month or year are skipped.</value></data>
 	<data name="ColorBlue" xml:space="preserve"><value>Blue</value></data>
 	<data name="ColorGreen" xml:space="preserve"><value>Green</value></data>

@@ -15,10 +15,10 @@
 
 - `None` is a single event. `Yearly` stores a month and day, without a meaningful year. `Monthly` stores only a day of month. The UTC start and end of a recurring event serve as anchors for its local notification times and time zone; their date is not a recurrence cutoff.
 - A missing date is skipped. February 29 occurs only in leap years; day 31 is skipped in months with fewer than 31 days. No occurrence is shifted to another day.
-- A recurring event has a first and last notification time on the same local date and a positive interval. The last time must align with the interval, so 11:00–17:00 with a three-hour interval produces 11:00, 14:00, and 17:00.
+- A recurring event has a first and last notification time on the same local date and a positive interval. Notifications follow the interval from the first time, and the last time is included even when it falls between interval steps. For example, 11:00–17:30 with a three-hour interval produces 11:00, 14:00, 17:00, and 17:30.
 - Future local times are resolved using the stored time zone and current system rules. A time missing during a daylight-saving transition is skipped. An ambiguous time uses the earlier occurrence (the larger UTC offset).
 - Calendar period queries expand a recurring event into dated occurrences. Each occurrence retains the series ID so editing or deleting an occurrence changes the whole series. Disabling a series suppresses its notification times but leaves it visible in the calendar.
-- Notification delivery and delivery history are separate work; the recurrence model calculates due times but the service does not yet deliver them.
+- The service schedules desktop notifications for recurring events and tracks their delivery status in History. Email reminders are available for one-time events.
 
 ## Reminder times
 
@@ -26,4 +26,4 @@
 - `OccurrenceCount` includes the first notification. One occurrence has no repeat interval. Multiple occurrences require a positive interval, and the last occurrence must be no later than the event start.
 - Trigger times are calculated in UTC using elapsed durations. Daylight-saving transitions do not duplicate or skip reminders.
 - A rule cannot be attached if its first trigger would precede the supported `DateTimeOffset` range. Repeating or rescheduling an event cannot invalidate an attached rule.
-- Identical rules cannot be added twice. Each trigger records its channel and UTC due time; delivery state and history belong to later application and persistence work.
+- Identical rules cannot be added twice. Each trigger records its channel and UTC due time; the service tracks delivery state and history separately from the domain model.

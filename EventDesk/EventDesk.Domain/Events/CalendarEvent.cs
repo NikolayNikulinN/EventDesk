@@ -161,21 +161,29 @@ public sealed class CalendarEvent
         TimeSpan first = TimeZoneInfo.ConvertTime(StartsAtUtc, zone).TimeOfDay;
         TimeSpan last = TimeZoneInfo.ConvertTime(EndsAtUtc, zone).TimeOfDay;
         List<DateTimeOffset> times = [];
-        for (TimeSpan time = first; time <= last; time += TimeSpan.FromMinutes(interval))
+        for (TimeSpan time = first; time < last; time += TimeSpan.FromMinutes(interval))
         {
-            DateTime local = date.ToDateTime(TimeOnly.MinValue).Add(time);
-            if (zone.IsInvalidTime(local))
-            {
-                continue;
-            }
-
-            TimeSpan offset = zone.IsAmbiguousTime(local)
-                ? zone.GetAmbiguousTimeOffsets(local).Max()
-                : zone.GetUtcOffset(local);
-            times.Add(new DateTimeOffset(local, offset).ToUniversalTime());
+            AddRecurringOccurrenceTime(times, date, zone, time);
         }
 
+        AddRecurringOccurrenceTime(times, date, zone, last);
+
         return times;
+    }
+
+    private static void AddRecurringOccurrenceTime(
+        List<DateTimeOffset> times, DateOnly date, TimeZoneInfo zone, TimeSpan time)
+    {
+        DateTime local = date.ToDateTime(TimeOnly.MinValue).Add(time);
+        if (zone.IsInvalidTime(local))
+        {
+            return;
+        }
+
+        TimeSpan offset = zone.IsAmbiguousTime(local)
+            ? zone.GetAmbiguousTimeOffsets(local).Max()
+            : zone.GetUtcOffset(local);
+        times.Add(new DateTimeOffset(local, offset).ToUniversalTime());
     }
 
     public void Reschedule(DateTimeOffset startsAt, DateTimeOffset endsAt, string timeZoneId)
@@ -307,8 +315,7 @@ public sealed class CalendarEvent
         DateTimeOffset localEnd = TimeZoneInfo.ConvertTime(endsAtUtc, zone);
         TimeSpan duration = localEnd.DateTime - localStart.DateTime;
         if (interval is < 1 or > 1439 or null ||
-            localStart.Date != localEnd.Date || duration <= TimeSpan.Zero ||
-            duration.Ticks % TimeSpan.FromMinutes(interval.Value).Ticks != 0)
+            localStart.Date != localEnd.Date || duration <= TimeSpan.Zero)
         {
             throw new ArgumentException(DomainValidationMessages.EventNotificationWindowInvalid, nameof(interval));
         }

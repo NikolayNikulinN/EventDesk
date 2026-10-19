@@ -13,15 +13,7 @@
       <Directory Id="INSTALLFOLDER" Name="EventDesk">
         <Directory Id="APPFOLDER" Name="App">
           <Component Id="EventDeskAppExecutable" Guid="A64675AB-8AE8-48A5-BB3D-439AAB315AD8">
-            <File Id="EventDeskAppFile" Source="$(var.AppPublishDir)\EventDesk.exe" KeyPath="yes">
-              <Shortcut Id="EventDeskStartMenuShortcut" Directory="ProgramMenuFolder"
-                        Name="EventDesk" WorkingDirectory="APPFOLDER" Icon="EventDeskApp.ico" Advertise="yes" />
-              <Shortcut Id="EventDeskDesktopShortcut" Directory="DesktopFolder"
-                        Name="EventDesk" WorkingDirectory="APPFOLDER" Icon="EventDeskApp.ico" Advertise="yes" />
-              <Shortcut Id="EventDeskStartupShortcut" Directory="StartupFolder"
-                        Name="EventDesk" Arguments="--background" WorkingDirectory="APPFOLDER"
-                        Icon="EventDeskApp.ico" Advertise="yes" />
-            </File>
+            <File Id="EventDeskAppFile" Source="$(var.AppPublishDir)\EventDesk.exe" KeyPath="yes" />
           </Component>
         </Directory>
         <Directory Id="SERVICEFOLDER" Name="Service">
@@ -43,6 +35,20 @@
       </Directory>
     </StandardDirectory>
 
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="EventDeskShortcuts" Guid="22345602-A084-44AD-9822-43B6DB4A3BEB">
+        <Shortcut Id="EventDeskStartMenuShortcut" Directory="ProgramMenuFolder"
+                  Name="EventDesk" Target="[#EventDeskAppFile]" WorkingDirectory="APPFOLDER" Advertise="no" />
+        <Shortcut Id="EventDeskDesktopShortcut" Directory="DesktopFolder"
+                  Name="EventDesk" Target="[#EventDeskAppFile]" WorkingDirectory="APPFOLDER" Advertise="no" />
+        <Shortcut Id="EventDeskStartupShortcut" Directory="StartupFolder"
+                  Name="EventDesk" Target="[#EventDeskAppFile]" Arguments="--background"
+                  WorkingDirectory="APPFOLDER" Advertise="no" />
+        <RegistryValue Root="HKCU" Key="Software\dLiX Software\EventDesk"
+                       Name="ShortcutsInstalled" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
     <StandardDirectory Id="CommonAppDataFolder">
       <Directory Id="EVENTDESKDATAROOT" Name="EventDesk">
         <Directory Id="EVENTDESKDATADIR" Name="Data">
@@ -57,6 +63,7 @@
 
     <Feature Id="MainFeature" Title="EventDesk" Level="1">
       <ComponentRef Id="EventDeskAppExecutable" />
+      <ComponentRef Id="EventDeskShortcuts" />
       <ComponentRef Id="EventDeskServiceExecutable" />
       <ComponentRef Id="EventDeskSqliteNative" />
       <ComponentRef Id="EventDeskDataDirectory" />

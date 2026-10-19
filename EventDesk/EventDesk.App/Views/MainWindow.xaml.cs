@@ -34,10 +34,38 @@ public partial class MainWindow : Window
 
     private void CloseButtonClick(object sender, RoutedEventArgs e) => Close();
 
+    public void ShowModal(FrameworkElement content)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+        RootNavigationView.IsPaneOpen = false;
+        ModalHost.Content = content;
+        ShellContent.IsEnabled = false;
+        ModalOverlay.Visibility = Visibility.Visible;
+    }
+
+    public void CloseModal(FrameworkElement content)
+    {
+        if (!ReferenceEquals(ModalHost.Content, content))
+        {
+            return;
+        }
+
+        ModalOverlay.Visibility = Visibility.Collapsed;
+        ModalHost.Content = null;
+        ShellContent.IsEnabled = true;
+    }
+
     public void PrepareForExit() => exiting = true;
 
     protected override void OnClosing(CancelEventArgs e)
     {
+        if (!exiting && ModalOverlay.Visibility == Visibility.Visible)
+        {
+            e.Cancel = true;
+            base.OnClosing(e);
+            return;
+        }
+
         if (!exiting)
         {
             e.Cancel = true;

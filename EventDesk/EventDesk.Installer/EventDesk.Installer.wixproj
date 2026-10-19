@@ -4,7 +4,8 @@
     <Platforms>x64</Platforms>
     <InstallerPlatform>x64</InstallerPlatform>
     <OutputPath>bin\$(Configuration)\x64\</OutputPath>
-    <EventDeskVersion Condition="'$(EventDeskVersion)' == ''">0.2.0</EventDeskVersion>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <EventDeskVersion Condition="'$(EventDeskVersion)' == ''">1.0.0</EventDeskVersion>
     <DefineConstants>$(DefineConstants);EventDeskVersion=$(EventDeskVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

@@ -36,29 +36,6 @@
     <Setter Property="Padding" Value="16" />
   </Style>
 
-  <Style x:Key="CalendarEditorDialogWindowStyle" TargetType="Window">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="WindowStyle" Value="None" />
-    <Setter Property="AllowsTransparency" Value="True" />
-    <Setter Property="ResizeMode" Value="NoResize" />
-    <Setter Property="ShowInTaskbar" Value="False" />
-  </Style>
-
-  <Style x:Key="CalendarEditorBackdropButtonStyle" TargetType="Button">
-    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="Button">
-          <Border Background="{TemplateBinding Background}"
-                  CornerRadius="{DynamicResource WindowCornerRadius}" />
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
   <Style x:Key="CalendarWeekRangeStyle" TargetType="TextBlock">
     <Setter Property="FontSize" Value="14" />
     <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />

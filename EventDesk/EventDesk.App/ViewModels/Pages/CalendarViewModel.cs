@@ -534,9 +534,17 @@ public sealed class CalendarViewModel : ObservableObject
                 return string.Empty;
             }
 
-            return string.Join(", ", Enumerable.Range(0, (last.Hour * 60 + last.Minute - first.Hour * 60 - first.Minute) / interval + 1)
+            int durationMinutes = last.Hour * 60 + last.Minute - first.Hour * 60 - first.Minute;
+            List<string> times = Enumerable.Range(0, durationMinutes / interval + 1)
                 .Select(index => first.AddMinutes(index * interval)
-                    .ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture)));
+                    .ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture))
+                .ToList();
+            if (durationMinutes % interval != 0)
+            {
+                times.Add(last.ToString(Resources.Time24HourFormat, CultureInfo.CurrentCulture));
+            }
+
+            return string.Join(", ", times);
         }
     }
 
@@ -548,9 +556,7 @@ public sealed class CalendarViewModel : ObservableObject
         interval = SelectedNotificationInterval?.Minutes ?? 0;
         bool hasFirstTime = TimeOnly.TryParse(StartTime, CultureInfo.CurrentCulture, out first);
         bool hasLastTime = TimeOnly.TryParse(EndTime, CultureInfo.CurrentCulture, out last);
-        return hasFirstTime && hasLastTime &&
-            interval > 0 && first < last &&
-            (last.Hour * 60 + last.Minute - first.Hour * 60 - first.Minute) % interval == 0;
+        return hasFirstTime && hasLastTime && interval > 0 && first < last;
     }
 
     private void MoveWeek(int days) => SelectedDate = (SelectedDate ?? DateTime.Today).AddDays(days);

@@ -5,15 +5,15 @@
 ## Сборка
 
 ```powershell
-dotnet build EventDesk.Installer/EventDesk.Installer.wixproj -c Release -p:Platform=x64 -p:EventDeskVersion=0.2.0
+dotnet build EventDesk.Installer/EventDesk.Installer.wixproj -c Release -p:Platform=x64 -p:EventDeskVersion=1.0.0
 ```
 
-Скопируйте полученный bundle перед сборкой `0.2.1`. Для WiX 7 сначала проверьте [OSMF и EULA](https://docs.firegiant.com/wix/osmf/) и примите соглашение на машине сборки, если оно применимо. Автоматического принятия в проекте нет.
+Скопируйте полученный bundle перед сборкой `1.0.1`. Для WiX 7 сначала проверьте [OSMF и EULA](https://docs.firegiant.com/wix/osmf/) и примите соглашение на машине сборки, если оно применимо. Автоматического принятия в проекте нет.
 
 ## Чистая установка
 
 1. Убедитесь, что EventDesk ещё не установлен и `%ProgramData%\EventDesk` отсутствует.
-2. Запустите bundle `0.2.0` от администратора.
+2. Запустите bundle `1.0.0` от администратора.
 3. Проверьте `C:\Program Files\EventDesk\App\EventDesk.exe`, `C:\Program Files\EventDesk\Service\EventDesk.Service.exe`, ярлыки и службу `EventDesk.Service` со статусом **Running** и типом запуска **Automatic**.
 4. Проверьте, что в `%ProgramData%\EventDesk\Data` появился `EventDesk.db`. Создайте событие и напоминание, откройте History и проверьте запись о доставке. Для почтового канала используйте тестовый SMTP-ящик.
 5. Закройте окно, проверьте значок трея и откройте приложение из трея. Перезапустите Windows и убедитесь, что служба поднялась, а EventDesk появился в трее без открытия окна. Запустите приложение через обычный ярлык: должно открыться существующее окно без второго значка в трее.
@@ -21,9 +21,9 @@ dotnet build EventDesk.Installer/EventDesk.Installer.wixproj -c Release -p:Platf
 ## Обновление
 
 1. Завершите приложение через **Exit** в трее. Сделайте резервную копию `%ProgramData%\EventDesk\Data` при остановленной службе.
-2. Установите bundle `0.2.1` поверх `0.2.0`.
+2. Установите bundle `1.0.1` поверх `1.0.0`.
 3. Проверьте, что в списке приложений одна запись EventDesk, служба запущена, ранее созданные событие, история и почтовые настройки сохранились, а новые файлы находятся в `App` и `Service`.
-4. Попробуйте запустить установщик `0.2.0`: понижение версии должно быть отклонено.
+4. Попробуйте запустить установщик `1.0.0`: понижение версии должно быть отклонено.
 
 ## Удаление
 
