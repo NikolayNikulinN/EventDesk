@@ -22,8 +22,7 @@
   <converters:CalendarScaleConverter x:Key="CalendarHourScaleConverter"
                                       BaseSize="{x:Static calendar:CalendarLayout.HourHeight}" />
   <converters:CalendarScaleConverter x:Key="CalendarEventHeightScaleConverter"
-                                      BaseSize="{x:Static calendar:CalendarLayout.HourHeight}"
-                                      MinimumValue="{x:Static calendar:CalendarLayout.MinimumEventHeight}" />
+                                      BaseSize="{x:Static calendar:CalendarLayout.HourHeight}" />
   <converters:CalendarScaleConverter x:Key="CalendarDayScaleConverter"
                                       BaseSize="{x:Static calendar:CalendarLayout.DayWidth}" />
 </ResourceDictionary>

@@ -179,7 +179,7 @@
 	<data name="EveryThreeHours" xml:space="preserve"><value>3 hours</value></data>
 	<data name="EveryFourHours" xml:space="preserve"><value>4 hours</value></data>
 	<data name="EverySixHours" xml:space="preserve"><value>6 hours</value></data>
-	<data name="NotificationWindowInvalid" xml:space="preserve"><value>The last notification must be after the first and align with the interval.</value></data>
+	<data name="NotificationWindowInvalid" xml:space="preserve"><value>The last notification must be after the first.</value></data>
 	<data name="MissingDatesSkipped" xml:space="preserve"><value>Dates missing from a month or year are skipped.</value></data>
 	<data name="ColorBlue" xml:space="preserve"><value>Blue</value></data>
 	<data name="ColorGreen" xml:space="preserve"><value>Green</value></data>
@@ -321,4 +321,6 @@
 	<data name="InstallerFilesInUseRetryButton" xml:space="preserve"><value>Retry</value></data>
 	<data name="InstallerFilesInUseIgnoreButton" xml:space="preserve"><value>Ignore</value></data>
 	<data name="InstallerFilesInUseExitButton" xml:space="preserve"><value>Exit</value></data>
+	<data name="InstallerDowngradeError" xml:space="preserve"><value>A newer version of EventDesk is already installed.</value></data>
+	<data name="InstallerServiceDescription" xml:space="preserve"><value>Processes EventDesk reminders and email delivery.</value></data>
 </root>

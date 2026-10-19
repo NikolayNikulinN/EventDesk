@@ -227,13 +227,19 @@ public sealed class CalendarEventTests
     }
 
     [Fact]
-    public void RecurringNotificationWindow_MustAlignWithInterval()
+    public void RecurringNotificationWindow_IncludesLastWhenIntervalDoesNotAlign()
     {
-        Assert.Throws<ArgumentException>(() => CalendarEvent.Create(
-            Guid.NewGuid(), "Birthday", new DateTimeOffset(2028, 2, 29, 11, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2028, 2, 29, 17, 0, 0, TimeSpan.Zero), "UTC",
+        CalendarEvent calendarEvent = CalendarEvent.Create(
+            Guid.NewGuid(), "Birthday", new DateTimeOffset(2028, 2, 29, 3, 45, 0, TimeSpan.Zero),
+            new DateTimeOffset(2028, 2, 29, 19, 6, 0, TimeSpan.Zero), "UTC",
             recurrenceKind: EventRecurrenceKind.Yearly, recurrenceMonth: 2, recurrenceDay: 29,
-            notificationIntervalMinutes: 240));
+            notificationIntervalMinutes: 180);
+
+        Assert.Equal(
+            new[] { new TimeOnly(3, 45), new TimeOnly(6, 45), new TimeOnly(9, 45),
+                    new TimeOnly(12, 45), new TimeOnly(15, 45), new TimeOnly(18, 45), new TimeOnly(19, 6) },
+            calendarEvent.GetRecurringNotificationTimes(new DateOnly(2032, 2, 29))
+                .Select(time => TimeOnly.FromDateTime(time.UtcDateTime)));
     }
 
     private static CalendarEvent CreateEvent() => CalendarEvent.Create(

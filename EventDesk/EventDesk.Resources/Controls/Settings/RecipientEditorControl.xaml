@@ -1,0 +1,25 @@
+<UserControl x:Class="EventDesk.Resources.Controls.Settings.RecipientEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Style="{StaticResource SettingsDialogStyle}">
+    <StackPanel>
+      <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding RecipientDialogTitle}" />
+      <TextBlock Style="{StaticResource SettingsDialogLabelStyle}" Text="{Binding Resources.EmailRecipientAddress}" />
+      <Grid>
+        <TextBox x:Name="RecipientAddressInput" Style="{StaticResource SettingsTextBoxStyle}" MaxLength="320"
+                 Text="{Binding RecipientDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Style="{StaticResource SettingsWatermarkStyle}"
+                   Text="{Binding Resources.EmailRecipientExample}"
+                   Visibility="{Binding IsRecipientWatermarkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+      </Grid>
+      <TextBlock Style="{StaticResource SettingsRecipientValidationMessageStyle}"
+                 Text="{Binding RecipientDraftError}" />
+      <StackPanel Style="{StaticResource SettingsDialogActionsStyle}">
+        <Button Style="{StaticResource SettingsModalCancelButtonStyle}" Content="{Binding Resources.Cancel}"
+                Command="{Binding CancelRecipientCommand}" />
+        <Button Style="{StaticResource SettingsModalSaveButtonStyle}" Content="{Binding Resources.SaveRecipient}"
+                Command="{Binding SaveRecipientCommand}" IsEnabled="{Binding CanSaveRecipient}" />
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>

@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Security.Principal;
 using EventDesk.App.ViewModels;
 using EventDesk.App.ViewModels.Pages;
 using EventDesk.App.Views;
@@ -28,13 +29,43 @@ public partial class App : System.Windows.Application
     private ILoggerWrapper? logger;
     private bool isExiting;
     private bool hostStopped;
+    private Mutex? instanceMutex;
+    private EventWaitHandle? activationEvent;
+    private RegisteredWaitHandle? activationRegistration;
+    private bool ownsInstanceMutex;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        bool startInBackground = e.Args.Contains(ApplicationConstants.BackgroundArgument,
+            StringComparer.OrdinalIgnoreCase);
+        string userSid = WindowsIdentity.GetCurrent().User?.Value
+            ?? throw new InvalidOperationException(ApplicationConstants.CurrentUserSidUnavailable);
+        instanceMutex = new Mutex(true, ApplicationConstants.InstanceMutexPrefix + userSid,
+            out bool createdNew);
+        ownsInstanceMutex = createdNew;
+        if (!createdNew)
+        {
+            if (!startInBackground)
+                ActivateRunningInstance(userSid);
+            Shutdown();
+            return;
+        }
+
+        activationEvent = new EventWaitHandle(false, EventResetMode.AutoReset,
+            ApplicationConstants.ActivationEventPrefix + userSid);
+        activationRegistration = ThreadPool.RegisterWaitForSingleObject(activationEvent, (_, _) =>
+        {
+            if (!Dispatcher.HasShutdownStarted)
+                Dispatcher.BeginInvoke(new Action(() =>
+                    host?.Services.GetRequiredService<TrayNotificationService>().OpenWindow()));
+        }, null, Timeout.Infinite, false);
+
         InteractiveCursorBehavior.Register();
 
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder(e.Args);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(e.Args.Where(argument =>
+            !string.Equals(argument, ApplicationConstants.BackgroundArgument,
+                StringComparison.OrdinalIgnoreCase)).ToArray());
         builder.Services.AddSingleton<IResourceWrapper, ResourceWrapper>();
         builder.Services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
         builder.Services.AddSingleton<IIpcClient>(new NamedPipeIpcClient(IpcConstants.PipeName));
@@ -63,11 +94,23 @@ public partial class App : System.Windows.Application
         try
         {
             MainWindow = host.Services.GetRequiredService<MainWindow>();
+            if (startInBackground)
+            {
+                MainWindow.Opacity = 0;
+                MainWindow.ShowInTaskbar = false;
+            }
             MainWindow.Show();
 
             if (!host.Services.GetRequiredService<INavigationService>().Navigate(typeof(CalendarPage)))
             {
                 throw new InvalidOperationException(ApplicationConstants.InitialCalendarNavigationFailed);
+            }
+
+            if (startInBackground)
+            {
+                MainWindow.Hide();
+                MainWindow.Opacity = 1;
+                MainWindow.ShowInTaskbar = true;
             }
 
             host.Services.GetRequiredService<TrayNotificationService>().Initialize();
@@ -116,23 +159,47 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        if (host is not null)
+        try
         {
-            try
+            if (host is not null)
             {
-                if (!hostStopped)
+                try
                 {
-                    logger?.Write(ApplicationConstants.DesktopApplicationStopping);
-                    host.StopAsync().GetAwaiter().GetResult();
+                    if (!hostStopped)
+                    {
+                        logger?.Write(ApplicationConstants.DesktopApplicationStopping);
+                        host.StopAsync().GetAwaiter().GetResult();
+                    }
+                }
+                finally
+                {
+                    host.Dispose();
+                    logger?.CloseAndFlush();
                 }
             }
-            finally
-            {
-                host.Dispose();
-                logger?.CloseAndFlush();
-            }
         }
+        finally
+        {
+            activationRegistration?.Unregister(null);
+            activationEvent?.Dispose();
+            if (ownsInstanceMutex) instanceMutex?.ReleaseMutex();
+            instanceMutex?.Dispose();
+            base.OnExit(e);
+        }
+    }
 
-        base.OnExit(e);
+    private static void ActivateRunningInstance(string userSid)
+    {
+        for (int attempt = 0; attempt < 20; attempt++)
+        {
+            if (EventWaitHandle.TryOpenExisting(ApplicationConstants.ActivationEventPrefix + userSid,
+                out EventWaitHandle? existingEvent))
+            {
+                using (existingEvent) existingEvent.Set();
+                return;
+            }
+
+            Thread.Sleep(50);
+        }
     }
 }

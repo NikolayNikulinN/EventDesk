@@ -1,10 +1,27 @@
 <Project Sdk="WixToolset.Sdk/7.0.0">
   <PropertyGroup>
     <OutputType>Package</OutputType>
-    <Platforms>x86;x64</Platforms>
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
+    <Platforms>x64</Platforms>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputPath>bin\$(Configuration)\x64\</OutputPath>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <EventDeskVersion Condition="'$(EventDeskVersion)' == ''">1.0.0</EventDeskVersion>
+    <AppPublishDir>$(MSBuildProjectDirectory)\obj\publish\App</AppPublishDir>
+    <ServicePublishDir>$(MSBuildProjectDirectory)\obj\publish\Service</ServicePublishDir>
+    <DefineConstants>$(DefineConstants);EventDeskVersion=$(EventDeskVersion);AppPublishDir=$(AppPublishDir);ServicePublishDir=$(ServicePublishDir)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Package.wxs" Link="Package.wxs" />
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\obj\InstallerTheme.en-us.wxl" />
   </ItemGroup>
+  <Target Name="GeneratePackageLocalization" BeforeTargets="AssignTargetPaths">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\GenerateInstallerLocalization.ps1&quot; -ResourceFile &quot;$(MSBuildProjectDirectory)\..\..\EventDesk.Resources\Resources\AppResource.resx&quot; -OutputFile &quot;$(MSBuildProjectDirectory)\obj\InstallerTheme.en-us.wxl&quot;" />
+  </Target>
+  <Target Name="PublishEventDeskPayload" BeforeTargets="CoreCompile">
+    <RemoveDir Directories="$(MSBuildProjectDirectory)\obj\publish\App;$(MSBuildProjectDirectory)\obj\publish\Service" />
+    <MSBuild Projects="..\..\EventDesk.App\EventDesk.App.csproj" Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU;RuntimeIdentifier=win-x64;SelfContained=true;PublishDir=$(AppPublishDir)\" />
+    <MSBuild Projects="..\..\EventDesk.Service\EventDesk.Service.csproj" Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU;RuntimeIdentifier=win-x64;SelfContained=true;PublishDir=$(ServicePublishDir)\" />
+  </Target>
 </Project>

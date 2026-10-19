@@ -57,7 +57,8 @@ public sealed class CalendarDay(DateTime date)
         double width = (CalendarLayout.DayWidth - 2 * CalendarLayout.EventInset) / laneCount;
         foreach ((CalendarEventItem item, int lane) in group)
         {
-            item.SetLayout(CalendarLayout.EventInset + lane * width, width - CalendarLayout.EventInset);
+            item.SetLayout(CalendarLayout.EventInset + lane * width,
+                width - (lane == laneCount - 1 ? 0 : CalendarLayout.EventInset));
         }
     }
 }

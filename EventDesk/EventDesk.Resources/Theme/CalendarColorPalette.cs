@@ -6,6 +6,8 @@ namespace EventDesk.Resources.Theme;
 
 public static class CalendarColorPalette
 {
+    public const byte EventFillAlpha = 192;
+
     public const string Blue = "#425EBA";
     public const string Green = "#259B70";
     public const string Orange = "#D88436";
@@ -21,7 +23,7 @@ public static class CalendarColorPalette
         new(Red, resources.ColorRed, CreateBrush(Red))
     ];
 
-    public static Brush CreateBrush(string? colorHex)
+    public static Brush CreateBrush(string? colorHex, byte alpha = byte.MaxValue)
     {
         Color color;
         try
@@ -33,6 +35,7 @@ public static class CalendarColorPalette
             color = (Color)ColorConverter.ConvertFromString(Blue);
         }
 
+        color.A = alpha;
         SolidColorBrush brush = new(color);
         brush.Freeze();
         return brush;

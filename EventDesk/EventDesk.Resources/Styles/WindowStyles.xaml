@@ -13,6 +13,24 @@
     </Style.Triggers>
   </Style>
 
+  <Style x:Key="ShellModalOverlayStyle" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource WindowCornerRadius}" />
+    <Setter Property="Visibility" Value="Collapsed" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
+                   Value="Maximized">
+        <Setter Property="CornerRadius" Value="0" />
+      </DataTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="ShellModalContentStyle" TargetType="ContentControl">
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="24" />
+  </Style>
+
   <Style x:Key="RoundedTitleBarStyle" TargetType="Border">
     <Setter Property="Background" Value="{DynamicResource TitleBarBackgroundBrush}" />
     <Setter Property="CornerRadius" Value="{DynamicResource TitleBarCornerRadius}" />

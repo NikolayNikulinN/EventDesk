@@ -3,7 +3,6 @@ using EventDesk.App.Services;
 using EventDesk.App.ViewModels.Pages;
 using EventDesk.App.ViewModels;
 using EventDesk.App.Views;
-using EventDesk.App.Views.Dialogs;
 using EventDesk.App.Views.Pages;
 using EventDesk.Contracts.Events;
 using EventDesk.Logger.Abstract;
@@ -236,6 +235,52 @@ public sealed class CalendarViewModelTests
     }
 
     [Fact]
+    public async Task RecurringEditor_AllowsLastNotificationOutsideIntervalSteps()
+    {
+        InMemoryEventClient client = new();
+        CalendarViewModel viewModel = new(client, new ResourceWrapper(), new NullLogger());
+        viewModel.NewEventCommand.Execute(null);
+        viewModel.EventTitle = "Yearly reminder";
+        viewModel.EventDescription = "Notification";
+        viewModel.SelectedRecurrence = viewModel.RecurrenceOptions.Single(option => option.Code == EventRecurrenceCode.Yearly);
+        viewModel.SelectedMonthOfYear = 10;
+        viewModel.SelectedDayOfMonth = 24;
+        viewModel.StartTime = "03:45";
+        viewModel.EndTime = "19:06";
+
+        Assert.True(viewModel.SaveEventCommand.CanExecute(null));
+        Assert.Equal("03:45, 06:45, 09:45, 12:45, 15:45, 18:45, 19:06", viewModel.NotificationTimesPreview);
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.IsEditing);
+        Assert.Equal(180, Assert.Single(client.Events).NotificationIntervalMinutes);
+    }
+
+    [Fact]
+    public async Task MonthlyEditor_AllowsLastNotificationOutsideIntervalSteps()
+    {
+        InMemoryEventClient client = new();
+        CalendarViewModel viewModel = new(client, new ResourceWrapper(), new NullLogger());
+        viewModel.NewEventCommand.Execute(null);
+        viewModel.EventTitle = "Monthly reminder";
+        viewModel.EventDescription = "Notification";
+        viewModel.SelectedRecurrence = viewModel.RecurrenceOptions.Single(option => option.Code == EventRecurrenceCode.Monthly);
+        viewModel.SelectedDayOfMonth = 20;
+        viewModel.StartTime = "03:18";
+        viewModel.EndTime = "08:11";
+        viewModel.SelectedNotificationInterval = viewModel.NotificationIntervalOptions.Single(option => option.Minutes == 60);
+
+        Assert.True(viewModel.SaveEventCommand.CanExecute(null));
+        Assert.Equal("03:18, 04:18, 05:18, 06:18, 07:18, 08:11", viewModel.NotificationTimesPreview);
+
+        await viewModel.SaveEventCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.IsEditing);
+        Assert.Equal(60, Assert.Single(client.Events).NotificationIntervalMinutes);
+    }
+
+    [Fact]
     public async Task NextWeek_ChangesVisibleDatesAndReloadsEvents()
     {
         CalendarViewModel viewModel = new(new InMemoryEventClient(), new ResourceWrapper(), new NullLogger());
@@ -302,19 +347,11 @@ public sealed class CalendarViewModelTests
                 page.UpdateLayout();
                 Assert.Empty(FindVisualChildren<CalendarEditorControl>(page));
                 Assert.Single(FindVisualChildren<MiniCalendarControl>(page));
-                CalendarEditorDialog dialog = new(viewModel);
-                Assert.Same(viewModel, dialog.DataContext);
-                Assert.Equal(WindowStartupLocation.CenterOwner, dialog.WindowStartupLocation);
-                Assert.False(dialog.ShowInTaskbar);
-                Grid dialogContent = Assert.IsType<Grid>(dialog.Content);
-                CalendarEditorControl editor = Assert.Single(dialogContent.Children.OfType<CalendarEditorControl>());
-                System.Windows.Controls.Button backdrop =
-                    Assert.Single(dialogContent.Children.OfType<System.Windows.Controls.Button>());
-                dialogContent.Measure(new Size(720, 460));
-                dialogContent.Arrange(new Rect(0, 0, 720, 460));
-                dialogContent.UpdateLayout();
-                Assert.Same(viewModel.CancelEditCommand, backdrop.Command);
-                Assert.InRange(editor.ActualHeight, 1, dialogContent.ActualHeight);
+                CalendarEditorControl editor = new() { DataContext = viewModel };
+                editor.Measure(new Size(720, 460));
+                editor.Arrange(new Rect(0, 0, editor.DesiredSize.Width, editor.DesiredSize.Height));
+                editor.UpdateLayout();
+                Assert.InRange(editor.ActualHeight, 1, 460);
                 Assert.Contains(FindVisualChildren<System.Windows.Controls.TextBlock>(editor),
                     label => label.Text == viewModel.Resources.NewEvent);
                 page.Measure(new Size(720, 460));

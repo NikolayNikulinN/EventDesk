@@ -1,0 +1,16 @@
+<UserControl x:Class="EventDesk.Resources.Controls.Settings.RecipientDeleteControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Style="{StaticResource SettingsDialogStyle}">
+    <StackPanel>
+      <TextBlock Style="{StaticResource SettingsSectionHeadingStyle}" Text="{Binding Resources.ConfirmDeleteRecipient}" />
+      <TextBlock Style="{StaticResource SettingsHintStyle}" Text="{Binding DeletingRecipient}" TextWrapping="Wrap" />
+      <StackPanel Style="{StaticResource SettingsDialogActionsStyle}">
+        <Button x:Name="CancelDeleteButton" Style="{StaticResource SettingsModalCancelButtonStyle}" Content="{Binding Resources.Cancel}"
+                Command="{Binding CancelDeleteRecipientCommand}" />
+        <Button Style="{StaticResource SettingsModalDeleteButtonStyle}" Content="{Binding Resources.DeleteRecipient}"
+                Command="{Binding ConfirmDeleteRecipientCommand}" />
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>

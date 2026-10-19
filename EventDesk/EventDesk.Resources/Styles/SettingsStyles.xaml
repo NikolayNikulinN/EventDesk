@@ -122,13 +122,41 @@
     <Setter Property="Margin" Value="0,12,0,24" />
     <Setter Property="HorizontalAlignment" Value="Left" />
   </Style>
-  <Style x:Key="SettingsSecondaryButtonStyle" TargetType="Button"
-         BasedOn="{StaticResource CalendarToolbarButtonStyle}">
-    <Setter Property="Margin" Value="0,0,8,0" />
+  <Style x:Key="SettingsDialogActionsStyle" TargetType="StackPanel">
+    <Setter Property="Orientation" Value="Horizontal" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="Margin" Value="0,24,0,0" />
   </Style>
-  <Style x:Key="SettingsDangerButtonStyle" TargetType="Button"
+
+  <Style x:Key="SettingsModalButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource CalendarConfirmationButtonStyle}">
+    <Setter Property="MinWidth" Value="100" />
+  </Style>
+  <Style x:Key="SettingsModalCancelButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource SettingsModalButtonStyle}">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource CalendarEventBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsModalSaveButtonStyle" TargetType="Button"
+         BasedOn="{StaticResource SettingsModalButtonStyle}">
+    <Setter Property="Margin" Value="8,0,0,0" />
+    <Setter Property="Background" Value="{DynamicResource CalendarAccentBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource CalendarAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource CalendarAccentHoverBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="SettingsModalDeleteButtonStyle" TargetType="Button"
          BasedOn="{StaticResource CalendarDeleteButtonStyle}">
-    <Setter Property="Margin" Value="0" />
+    <Setter Property="MinWidth" Value="100" />
+    <Setter Property="Margin" Value="8,0,0,0" />
   </Style>
   <Style x:Key="SettingsTextActionStyle" TargetType="Button"
          BasedOn="{StaticResource CalendarToolbarButtonStyle}">
@@ -165,24 +193,6 @@
   </Style>
   <Style x:Key="SettingsStatusStyle" TargetType="TextBlock" BasedOn="{StaticResource SettingsHintStyle}">
     <Setter Property="Margin" Value="0,12,0,0" />
-  </Style>
-  <Style x:Key="SettingsEditorOverlayStyle" TargetType="Grid">
-    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
-    <Setter Property="Visibility" Value="Collapsed" />
-    <Style.Triggers>
-      <DataTrigger Binding="{Binding IsRecipientEditorOpen}" Value="True">
-        <Setter Property="Visibility" Value="Visible" />
-      </DataTrigger>
-    </Style.Triggers>
-  </Style>
-  <Style x:Key="SettingsDeleteOverlayStyle" TargetType="Grid">
-    <Setter Property="Background" Value="{DynamicResource CalendarEditorBackdropBrush}" />
-    <Setter Property="Visibility" Value="Collapsed" />
-    <Style.Triggers>
-      <DataTrigger Binding="{Binding IsDeleteConfirmationOpen}" Value="True">
-        <Setter Property="Visibility" Value="Visible" />
-      </DataTrigger>
-    </Style.Triggers>
   </Style>
   <Style x:Key="SettingsDialogStyle" TargetType="Border"
          BasedOn="{StaticResource CalendarEditorPanelStyle}">

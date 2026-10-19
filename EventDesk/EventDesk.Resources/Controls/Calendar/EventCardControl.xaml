@@ -16,12 +16,23 @@
   </UserControl.Height>
   <Button Style="{StaticResource CalendarEventCardStyle}"
           BorderBrush="{Binding ColorBrush}"
+          Background="{Binding FillBrush}"
           Command="{Binding DataContext.EditEventCommand, RelativeSource={RelativeSource AncestorType={x:Type calendar:WeekCalendarControl}}}"
-          CommandParameter="{Binding}"
-          ToolTip="{Binding TimeRange}">
-    <StackPanel>
-      <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Title}" />
-      <TextBlock FontSize="11" TextTrimming="CharacterEllipsis" Text="{Binding TimeRange}" />
-    </StackPanel>
+          CommandParameter="{Binding}">
+    <Button.ToolTip>
+      <ToolTip Style="{StaticResource CalendarEventToolTipStyle}"
+               DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+        <StackPanel MaxWidth="320">
+          <TextBlock Style="{StaticResource CalendarEventToolTipTitleStyle}"
+                     Text="{Binding Title}" />
+          <TextBlock Style="{StaticResource CalendarEventToolTipTimeStyle}"
+                     Text="{Binding TimeRange}" />
+          <Border Style="{StaticResource CalendarEventToolTipDividerStyle}" />
+          <TextBlock Style="{StaticResource CalendarEventToolTipDescriptionStyle}"
+                     Text="{Binding Source.Description}" />
+        </StackPanel>
+      </ToolTip>
+    </Button.ToolTip>
+    <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Title}" />
   </Button>
 </UserControl>

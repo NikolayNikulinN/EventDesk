@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using EventDesk.App.ViewModels.Pages;
-using EventDesk.App.Views.Dialogs;
+using EventDesk.App.Views;
 using EventDesk.Resources.Controls.Calendar;
 
 namespace EventDesk.App.Views.Pages;
@@ -11,7 +11,8 @@ namespace EventDesk.App.Views.Pages;
 public partial class CalendarPage : Page
 {
     private readonly CalendarViewModel viewModel;
-    private CalendarEditorDialog? editorDialog;
+    private CalendarEditorControl? editorControl;
+    private MainWindow? editorOwner;
     private int miniCalendarAnimationVersion;
 
     public CalendarPage(CalendarViewModel viewModel)
@@ -29,7 +30,7 @@ public partial class CalendarPage : Page
         await viewModel.RefreshCommand.ExecuteAsync(null);
         if (viewModel.IsEditing)
         {
-            ShowEditorDialog();
+            ShowEditorModal();
         }
     }
 
@@ -38,7 +39,7 @@ public partial class CalendarPage : Page
         viewModel.PropertyChanged -= ViewModelPropertyChanged;
         UpdateMiniCalendar(animate: false);
         viewModel.RefreshCommand.Cancel();
-        editorDialog?.Close();
+        HideEditorModal();
         viewModel.CancelEditCommand.Execute(null);
     }
 
@@ -57,11 +58,11 @@ public partial class CalendarPage : Page
 
         if (viewModel.IsEditing)
         {
-            ShowEditorDialog();
+            ShowEditorModal();
         }
         else
         {
-            editorDialog?.Close();
+            HideEditorModal();
         }
     }
 
@@ -123,31 +124,26 @@ public partial class CalendarPage : Page
         MiniCalendarHost.BeginAnimation(UIElement.OpacityProperty, opacityAnimation);
     }
 
-    private void ShowEditorDialog()
+    private void ShowEditorModal()
     {
-        if (editorDialog is not null || !IsLoaded || Window.GetWindow(this) is not { } owner)
+        if (editorControl is not null || !IsLoaded || Window.GetWindow(this) is not MainWindow owner)
         {
             return;
         }
 
-        CalendarEditorDialog dialog = new(viewModel)
+        CalendarEditorControl editor = new() { DataContext = viewModel };
+        editorControl = editor;
+        editorOwner = owner;
+        owner.ShowModal(editor);
+    }
+
+    private void HideEditorModal()
+    {
+        if (editorControl is { } editor)
         {
-            Owner = owner,
-            Width = owner.ActualWidth,
-            Height = owner.ActualHeight
-        };
-        editorDialog = dialog;
-        try
-        {
-            dialog.ShowDialog();
-        }
-        finally
-        {
-            editorDialog = null;
-            if (viewModel.IsEditing)
-            {
-                viewModel.CancelEditCommand.Execute(null);
-            }
+            editorOwner?.CloseModal(editor);
+            editorControl = null;
+            editorOwner = null;
         }
     }
 }
